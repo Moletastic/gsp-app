@@ -1,12 +1,10 @@
-import { shallowMount } from '@vue/test-utils'
-import HelloWorld from '@/components/HelloWorld.vue'
+import { shallowMount } from "@vue/test-utils";
+import HelloWorld from "@/components/HelloWorld.vue";
+import ProjectsView from '@/views/Projects/index.vue';
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message'
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg }
-    })
-    expect(wrapper.text()).toMatch(msg)
-  })
-})
+describe("ProjectsView.vue", () => {
+    it("check if projects has been loaded", () => {
+        const wrapper = shallowMount(ProjectsView);
+        expect(wrapper.contains("v-card")).toBe(true);
+    });
+});
