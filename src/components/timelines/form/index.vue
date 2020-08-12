@@ -2,7 +2,7 @@
   <v-layout wrap align-center fill-height class="text-center">
     <v-flex xs12>
       <v-timeline dense v-if="items.length > 0">
-        <v-timeline-item icon="mdi-calendar" fill-dot right v-for="(item, index) in orderedItems" :key="index">
+        <v-timeline-item :color="item.color ? item.color : 'indigo'" :icon="item.icon ? item.icon: 'mdi-clipboard-list'" fill-dot right v-for="(item, index) in orderedItems" :key="index">
           <v-layout wrap>
             <v-flex xs12>
               <v-card outlined>

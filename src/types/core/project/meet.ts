@@ -1,6 +1,6 @@
-import { $debug, make_enum, generateID } from '@/utils'
-import { Moment } from 'moment';
-import moment from 'moment';
+import { $debug, make_enum, generateID } from "@/utils";
+import { Moment } from "moment";
+import moment from "moment";
 
 export enum OnlineChannel {
     TEAMS = "Microsoft Teams",
@@ -22,58 +22,59 @@ export enum OnlineChannelIcon {
 
 const channel = make_enum(["TEAMS", "ZOOM", "MEET", "HANGOUT", "OTHER"]);
 
-type channel = keyof typeof channel
+type channel = keyof typeof channel;
 
 export interface IChannel {
-    id: string
-    name: string
-    icon: string
-    url ?: string
-    is_online : boolean
+    id: string;
+    name: string;
+    icon: string;
+    url?: string;
+    is_online: boolean;
 }
 
 export class Channel implements IChannel {
-    id !: string
-    name !: string
-    icon !: string
-    url ?: string
-    is_online : boolean = false
+    id!: string;
+    name!: string;
+    icon!: string;
+    url?: string;
+    is_online: boolean = false;
 
-    constructor(data?:{online_channel ?: OnlineChannel, icon?: OnlineChannelIcon}){
-        if(data){
-            $debug('log', data.online_channel);
-            if(data.online_channel){
-                this.id = data.online_channel
-                this.name = data.online_channel
+    constructor(data?: {
+        online_channel?: OnlineChannel;
+        icon?: OnlineChannelIcon;
+    }) {
+        if (data) {
+            $debug("log", data.online_channel);
+            if (data.online_channel) {
+                this.id = data.online_channel;
+                this.name = data.online_channel;
                 this.is_online = true;
             }
-            if(data.icon) this.icon = data.icon
+            if (data.icon) this.icon = data.icon;
         }
     }
-
 }
 
 export interface IMeet {
-    id: string
-    name: string
-    date: Moment
-    channel : Channel
-    done : boolean
+    id: string;
+    name: string;
+    date: Moment;
+    channel: Channel;
+    done: boolean;
 }
 
 // Reunión
 export class Meet implements IMeet {
-    id !: string
-    name !: string
-    date !: Moment
-    channel = new Channel()
-    done : boolean = false;
-    
+    id!: string;
+    name!: string;
+    date!: Moment;
+    channel = new Channel();
+    done: boolean = false;
 
-    constructor(partial: Partial<Meet>){
+    constructor(partial: Partial<Meet>) {
         this.id = partial.id || generateID("MEET");
-        this.name = partial.name || "";
-        this.date = partial.date || moment(new Date());
+        this.name = partial.name || "Reunión #";
+        this.date = moment(partial.date) || moment(new Date());
         this.channel = partial.channel || new Channel();
         this.done = Boolean(partial.done);
     }

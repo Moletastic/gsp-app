@@ -1,6 +1,6 @@
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 import { $debug } from '@/utils'
-import { DataTable } from '@/types/vuetify'
+import { DataTable, Mode } from '@/types/vuetify'
 import { Meet, Channel } from '@/types/core/project';
 import moment from 'moment'
 import MeetForm from '@/components/form/meet/index.vue'
@@ -50,10 +50,50 @@ export default class MeetTable extends Vue {
     meet = new Meet({});
 
     modal = false;
+    modal_mode: Mode = "CHECK";
 
-    onCheckDetail(meet: Meet){
-        this.meet = meet;
+    selected_index = 0;
+
+    checkDetails(meet: Meet) {
+        this.selected_index = this.table.data.indexOf(meet);
+        this.modal_mode = "CHECK";
+        this.meet = Object.assign({}, meet);
         this.modal = true;
+    }
+
+    drop() {
+        this.$delete(this.table.data, this.selected_index);
+        this.close();
+    }
+
+    edit() {
+        this.modal_mode = "EDIT";
+    }
+
+    update() {
+        this.$set(
+            this.table.data,
+            this.selected_index,
+            Object.assign({}, this.meet)
+        );
+        this.close();
+    }
+
+    add() {
+        this.meet = new Meet({});
+        this.modal_mode = "ADD";
+        this.modal = true;
+    }
+
+    create() {
+        const index = this.table.data.length;
+        this.$set(this.table.data, index, Object.assign({}, this.meet));
+        this.close();
+    }
+
+    close() {
+        this.modal = false;
+        this.modal_mode = "CHECK";
     }
 
     moment = moment;

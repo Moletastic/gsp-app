@@ -5,6 +5,7 @@ import LinkForm from '@/components/form/link/index.vue'
 import DateField from '@/components/fields/date/index.vue'
 import TimeLine from '@/components/timelines/form/index.vue'
 import StudentForm from '@/components/form/user/student/index.vue'
+import TeacherForm from '@/components/form/user/teacher/index.vue'
 import { Student } from '@/types/core/access/student'
 import { User } from '@/types/core/access/user'
 import { Teacher } from '@/types/core/access/teacher'
@@ -12,7 +13,7 @@ import { $api } from '@/api'
 import moment, { Moment } from 'moment'
 
 @Component({
-    components:{LinkForm, DateField,TimeLine, StudentForm}
+    components:{LinkForm, DateField,TimeLine, StudentForm, TeacherForm}
 })
 export default class ProjectForm extends Vue {
     form = new Project()
@@ -26,6 +27,7 @@ export default class ProjectForm extends Vue {
     tags : string[] = [];
 
     student_modal = false;
+    teacher_modal = false;
 
     private initForm(){
         this.form.subjects = [this.subjects[0]]

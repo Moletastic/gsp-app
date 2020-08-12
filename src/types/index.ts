@@ -1,51 +1,41 @@
 interface TlObject {
-    id: string  
+    id: string;
 }
 
 interface iRef<T> {
-    _class : string
-    class : string
-    id: string
+    _class: string;
+    class: string;
+    id: string;
 }
 
 class Ref<T> implements iRef<T> {
-    _class !: string
-    class !: string
-    id !: string   
-
-    static create(){
-        
-    }
+    _class!: string;
+    class!: string;
+    id!: string;
 }
 
 interface User {
-    id: string
-    name: string
-    email: string
+    id: string;
+    name: string;
+    email: string;
 }
 
 interface Student extends User {
-    career_code: string
+    career_code: string;
 }
 
-interface Teacher extends User {
+interface Teacher extends User {}
 
+interface Agreement extends TlObject {
+    title: string;
+    desc: string;
+    checked: boolean;
+    creator: Ref<Teacher>;
+    created_at: Date;
+    checked_at: Date;
 }
 
-
-
-interface Agreement extends TlObject{
-    title: string
-    desc: string
-    checked: boolean
-    creator : Ref<Teacher>
-    created_at : Date
-    checked_at: Date
-}
-
-interface Progress extends TlObject {
-
-}
+interface Progress extends TlObject {}
 
 enum FileType {
     TEXT = "TXT",
@@ -63,58 +53,52 @@ enum ImgType {
 }
 
 interface TlFile extends TlObject {
-    name: string
-    url: string
-    mime: string
+    name: string;
+    url: string;
+    mime: string;
 }
 
 interface Media extends TlFile {
-    name: string
-    url: string
+    name: string;
+    url: string;
 }
 
 interface Platform extends TlObject {
-    name : string
-    icon : Media
+    name: string;
+    icon: Media;
 }
 
-interface Meet extends TlObject{
-    date: Date
-    topics : Array<Topic>
-    tags: Array<Tag>
+interface Meet extends TlObject {
+    date: Date;
+    topics: Array<Topic>;
+    tags: Array<Tag>;
 }
-
 
 interface Milestone extends TlObject {
-    name: string
-    created_at: Date
-    date: Date
+    name: string;
+    created_at: Date;
+    date: Date;
 }
 
 interface Topic extends TlObject {
-    name : string
-    desc: string
+    name: string;
+    desc: string;
 }
 
 interface Tag extends TlObject {
-    name: string
+    name: string;
 }
 
-
-interface LinkIcon extends Media{
-    
-}
+interface LinkIcon extends Media {}
 
 interface ProjectLink extends TlObject {
-    name: string
-    link: string
-    icon : LinkIcon
+    name: string;
+    link: string;
+    icon: LinkIcon;
 }
 
 interface Project extends TlObject {
-
-    
-    meets : Array<Meet>
-    milestones : Array<Milestone>
-    tags: Array<Tag>
+    meets: Array<Meet>;
+    milestones: Array<Milestone>;
+    tags: Array<Tag>;
 }

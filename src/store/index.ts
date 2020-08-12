@@ -12,6 +12,7 @@ export default new Vuex.Store({
   state: {
     sidebar: false,
     selected_project: new Project(),
+    projects: [] as Array<Project>
   },
   mutations: {
     toggle_sidebar(state) {
@@ -20,6 +21,9 @@ export default new Vuex.Store({
     set_project(state, project: Project) {
       state.selected_project = project;
     },
+    set_projects(state, projects: Project[]){
+        state.projects = projects;
+    }
   },
   actions: {
   },

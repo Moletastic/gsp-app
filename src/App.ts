@@ -8,7 +8,7 @@ import SideBar from "@/components/partials/SideBar/index.vue";
     }
 })
 export default class App extends Vue {
-    logo = require('@/assets/timeline.png')
+    logo = require("@/assets/timeline.png");
     toggle() {
         this.$store.commit("toggle_sidebar");
     }

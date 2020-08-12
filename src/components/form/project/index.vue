@@ -44,7 +44,7 @@
             item-text="user.nick"
             return-object
           ></v-select>
-          <v-btn class="ml-2" outlined x-small color="success">
+          <v-btn class="ml-2" outlined x-small color="success" @click="teacher_modal = true">
             Nuevo
             <v-icon x-small>mdi-plus</v-icon>
           </v-btn>
@@ -158,6 +158,19 @@
               <v-divider></v-divider>
               <v-card-text class="mt-5">
                 <student-form></student-form>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+        </v-flex>
+        <v-flex xs12>
+          <v-dialog max-width="960px" v-model="teacher_modal">
+            <v-card>
+              <v-card-title>
+                <span class="body-1"> <v-chip small color="success"><v-icon small>mdi-plus</v-icon></v-chip> Nuevo profesor</span>
+              </v-card-title>
+              <v-divider></v-divider>
+              <v-card-text class="mt-5">
+                <teacher-form></teacher-form>
               </v-card-text>
             </v-card>
           </v-dialog>

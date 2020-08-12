@@ -9,20 +9,24 @@
         <v-card outlined>
           <v-card-text>
             <v-layout wrap align-center>
-              <v-flex xs6>
-                <v-text-field prepend-icon="mdi-text-box-search-outline" label="Buscar por nombre: "></v-text-field>
+              <v-flex xs5>
+                <v-text-field v-model="filters.name" prepend-icon="mdi-text-box-search-outline" label="Buscar por nombre: "></v-text-field>
               </v-flex>
               <v-flex xs3>
-                <v-select :items="states" label="Seleccionar Estado de Proyecto"></v-select>
+                <v-select v-model="filters.state" :items="states" item-text="val" item-value="key" label="Seleccionar Estado de Proyecto"></v-select>
               </v-flex>
               <v-flex xs3>
+                <v-select v-model="filters.project_type" :items="project_types" item-text="val" item-value="key" label="Seleccionar Tipo de Proyecto"></v-select>
+              </v-flex>
+              <v-flex xs2>
                 <v-select v-model="filters.year" :items="years" label="Ingresar año de proyecto:"></v-select>
               </v-flex>
               <v-flex xs6>
-                <v-autocomplete label="Seleccionar profesor: " :items="teachers" item-text="user.nick" return-object></v-autocomplete>
+                <v-autocomplete v-model="filters.teacher" label="Seleccionar profesor: " :items="teachers" item-text="user.nick" return-object></v-autocomplete>
               </v-flex>
-              <v-flex xs1 class="pb-3">
-                <v-btn depressed outlined color="primary">Buscar <v-icon right>mdi-database-search</v-icon></v-btn>
+              <v-flex xs4 class="pb-3">
+                <v-btn color="primary" @click="applyFilter">Buscar <v-icon right>mdi-database-search</v-icon></v-btn>
+                <v-btn class="ml-3" @click="clearFilter" depressed outlined color="primary">Limpiar filtro</v-btn>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -49,7 +53,7 @@
         <v-card class="project-preview-card" outlined>
           <v-list-item three-line>
             <v-list-item-content>
-              <div class="overline mb-4">{{project.subjects[0].name}}</div>
+              <div class="overline mb-4">{{project.subjects[0].name}} ({{fmt_type[project.project_type]}})</div>
               <v-list-item-title class="title mb-1">{{project.title}}</v-list-item-title>
               <v-list-item-subtitle>
                 Hecho por:

@@ -2,6 +2,8 @@ import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 import { generateID, $debug } from '@/utils';
 import { Meet, Channel } from '@/types/core/project';
 import DateField from '@/components/fields/date/index.vue'
+import { Mode } from '@/types/vuetify';
+import moment from 'moment'
 
 @Component({
     components:{
@@ -22,5 +24,10 @@ export default class MeetForm extends Vue {
 
     @Prop({default : () => new Meet({})})
     form !: Meet;
+
+    @Prop({default: "CHECK"})
+    mode !: Mode ;
+
+    moment = moment;
 
 }
