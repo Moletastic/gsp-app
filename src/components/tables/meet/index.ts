@@ -5,13 +5,15 @@ import { Meet, Channel } from "@/types/core/project";
 import moment from "moment";
 import MeetForm from "@/components/form/meet/index.vue";
 import { $api } from "@/api";
+import CrudTableMixin from "@/components/mixins/crud-table";
+import { CRUDService } from "@/api/crud-service";
 
 @Component({
     components: {
         MeetForm
     }
 })
-export default class MeetTable extends Vue {
+export default class MeetTable extends CrudTableMixin<Meet> {
     @Prop({
         default: () => {
             return new DataTable<Meet>({
@@ -39,6 +41,8 @@ export default class MeetTable extends Vue {
     })
     table!: DataTable<Meet>;
 
+    api = new CRUDService<Meet>("meet");
+    entity = new Meet({});
     channels: Channel[] = [];
 
     mounted() {
@@ -49,56 +53,9 @@ export default class MeetTable extends Vue {
         this.channels = await this.getChannels();
     }
 
-    meet = new Meet({});
-
-    modal = false;
-    modal_mode: Mode = "CHECK";
-
-    selected_index = 0;
-
-    checkDetails(meet: Meet) {
-        this.selected_index = this.table.data.indexOf(meet);
-        this.modal_mode = "CHECK";
-        this.meet = Object.assign({}, meet);
-        this.modal = true;
+    getNew(): Meet {
+        return new Meet({});
     }
-
-    drop() {
-        this.$delete(this.table.data, this.selected_index);
-        this.close();
-    }
-
-    edit() {
-        this.modal_mode = "EDIT";
-    }
-
-    update() {
-        this.$set(
-            this.table.data,
-            this.selected_index,
-            Object.assign({}, this.meet)
-        );
-        this.close();
-    }
-
-    add() {
-        this.meet = new Meet({});
-        this.modal_mode = "ADD";
-        this.modal = true;
-    }
-
-    create() {
-        const index = this.table.data.length;
-        this.$set(this.table.data, index, Object.assign({}, this.meet));
-        this.close();
-    }
-
-    close() {
-        this.modal = false;
-        this.modal_mode = "CHECK";
-    }
-
-    moment = moment;
 
     async getChannels() {
         const data: Array<Channel> = await $api.get("channel");

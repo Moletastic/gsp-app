@@ -42,7 +42,7 @@ import StateSwitch from "@/components/state_switch/index.vue";
     }
 })
 export default class ProjectView extends Vue {
-    title: string = "";
+    title = "";
     project: Project = new Project({});
     project_states: ProjectState[] = [];
     icon!: string;

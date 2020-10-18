@@ -17,7 +17,7 @@ export class Commit extends GSPObject implements ICommit {
     title!: string;
     desc!: string;
     solved_at!: string | null;
-    solved: boolean = false;
+    solved = false;
     limit_date!: string | null;
     project_id!: number | null;
 

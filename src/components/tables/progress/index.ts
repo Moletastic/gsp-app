@@ -1,77 +1,38 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
+import { Vue, Component, Prop, Watch, Mixins } from "vue-property-decorator";
 import { $debug } from "@/utils/";
 import { DataTable } from "@/types/vuetify";
 import { Progress, IProgress } from "@/types/core/project";
-import moment from "moment";
+import CrudTableMixin from "@/components/mixins/crud-table";
+import { CRUDService } from "@/api/crud-service";
 
 @Component
-export default class ProgressTable extends Vue {
+export default class ProgressTable extends CrudTableMixin<Progress> {
     @Prop({
         default: () => {
-            return new DataTable<IProgress>({
+            return new DataTable<Progress>({
                 headers: [
+                    {
+                        text: "ID",
+                        value: "id"
+                    },
                     {
                         text: "Nombre",
                         value: "name"
                     },
                     {
-                        text: "",
-                        value: "_actions"
+                        text: "Creado en",
+                        value: "created_at"
                     }
-                ],
-                rowsPerPageText: "Hitos por página"
+                ]
             });
         }
     })
-    table!: DataTable<IProgress>;
+    readonly table!: DataTable<Progress>;
 
-    progress = new Progress({});
+    api = new CRUDService<Progress>("progress");
+    entity = new Progress({});
 
-    modal = false;
-    modal_mode = "CHECK";
-    selected_index = 0;
-
-    onCheckDetail(progress: Progress) {
-        this.selected_index = this.table.data.indexOf(progress);
-        this.modal_mode = "CHECK";
-        this.progress = new Progress(progress);
-        this.modal = true;
+    getNew(): Progress {
+        return new Progress({});
     }
-
-    drop() {
-        this.$delete(this.table.data, this.selected_index);
-        this.close();
-    }
-
-    editProgress() {
-        this.modal_mode = "EDIT";
-    }
-
-    update() {
-        this.$set(
-            this.table.data,
-            this.selected_index,
-            new Progress(this.progress)
-        );
-        this.close();
-    }
-
-    add() {
-        this.progress = new Progress({});
-        this.modal_mode = "ADD";
-        this.modal = true;
-    }
-
-    create() {
-        const index = this.table.data.length;
-        this.$set(this.table.data, index, new Progress(this.progress));
-        this.close();
-    }
-
-    close() {
-        this.modal = false;
-        this.modal_mode = "CHECK";
-    }
-
-    moment = moment;
 }

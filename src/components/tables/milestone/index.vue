@@ -29,7 +29,7 @@
                         outlined
                         color="indigo"
                         small
-                        @click="onCheckDetail(item)"
+                        @click="checkDetails(item)"
                         >revisar</v-btn
                     >
                 </template>
@@ -39,10 +39,10 @@
             <v-dialog v-model="modal" width="720px">
                 <v-card outlined>
                     <v-card-title
-                        >Hito: {{ milestone.title }}
+                        >Hito: {{ entity.title }}
                         <v-btn
                             v-if="modal_mode === 'CHECK'"
-                            @click="editMilestone"
+                            @click="edit()"
                             class="ml-5 pl-2"
                             small
                             >Editar</v-btn
@@ -57,7 +57,7 @@
                     </v-card-title>
                     <v-card-text>
                         <milestone-form
-                            :form="milestone"
+                            :form="entity"
                             :mode="modal_mode"
                         ></milestone-form>
                     </v-card-text>

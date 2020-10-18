@@ -4,10 +4,6 @@ import { ISignupForm } from "@/types/core/access";
 import { IGSPObject } from "@/types/core/base";
 import { User } from "@/types/core/access/user";
 
-interface TLObject {
-    id: string;
-}
-
 class TLAPI {
     client!: AxiosInstance;
 

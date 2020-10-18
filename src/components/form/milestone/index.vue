@@ -71,7 +71,7 @@
                 <v-flex xs12>
                     Fecha
                     <v-chip label v-if="form.date">
-                        {{ form.date.format("DD MMMM") }}</v-chip
+                        {{ form.date | datetime }}</v-chip
                     >
                     <v-chip v-else>Sin fecha asociada</v-chip>
                 </v-flex>

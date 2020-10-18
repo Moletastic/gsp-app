@@ -7,6 +7,7 @@ import "moment/locale/es";
 import moment from "moment";
 Vue.config.productionTip = false;
 Vue.config.silent = true;
+Vue.prototype.$moment = moment;
 
 Vue.filter("date", (value: string) => {
     return moment(value).format("DD MMMM");

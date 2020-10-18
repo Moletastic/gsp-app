@@ -15,7 +15,7 @@ export default class CommitTable extends Vue {
     @Prop()
     readonly project_id!: number;
 
-    api_service = new CRUDService("commit");
+    api_service = new CRUDService<Commit>("commit");
 
     @Prop({
         default: () => {
@@ -48,14 +48,14 @@ export default class CommitTable extends Vue {
 
     selected_index = 0;
 
-    checkDetails(commit: Commit) {
+    checkDetails(commit: Commit): void {
         this.selected_index = this.table.data.indexOf(commit);
         this.modal_mode = "CHECK";
         this.commit = Object.assign({}, commit);
         this.modal = true;
     }
 
-    async drop() {
+    async drop(): Promise<void> {
         const commit = this.table.data[this.selected_index];
         try {
             const result = await this.api_service.delete(commit);
@@ -67,11 +67,11 @@ export default class CommitTable extends Vue {
         this.close();
     }
 
-    edit() {
+    edit(): void {
         this.modal_mode = "EDIT";
     }
 
-    async update() {
+    async update(): Promise<void> {
         this.$set(
             this.table.data,
             this.selected_index,
@@ -88,13 +88,13 @@ export default class CommitTable extends Vue {
         this.close();
     }
 
-    add() {
+    add(): void {
         this.commit = new Commit({});
         this.modal_mode = "ADD";
         this.modal = true;
     }
 
-    async create() {
+    async create(): Promise<void> {
         const index = this.table.data.length;
         this.$set(this.table.data, index, Object.assign({}, this.commit));
         const commit = this.table.data[index];
@@ -110,7 +110,7 @@ export default class CommitTable extends Vue {
         this.close();
     }
 
-    close() {
+    close(): void {
         this.modal = false;
         this.modal_mode = "CHECK";
     }

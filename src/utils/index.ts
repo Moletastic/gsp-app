@@ -7,7 +7,7 @@ type LoggerType = "log" | "warn" | "error";
 
 export function $debug(type: LoggerType, ...content: any | any[]) {
     //const msg = [`%c `,...content, 'background: #689F38; color: #000000'];
-    let msg = {
+    const msg = {
         color:
             "background: #3F51B5; color: #ffffff; font-weight: bold; font-size: 16px<"
     };

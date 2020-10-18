@@ -56,7 +56,7 @@
             <v-dialog v-model="modal" width="760px">
                 <v-card outlined>
                     <v-card-title
-                        >Reunión: {{ meet.name }}
+                        >Reunión: {{ entity.name }}
                         <v-btn
                             v-if="modal_mode === 'CHECK'"
                             @click="edit"
@@ -74,7 +74,7 @@
                     </v-card-title>
                     <v-card-text>
                         <meet-form
-                            :form="meet"
+                            :form="entity"
                             :mode="modal_mode"
                             :channels="channels"
                         ></meet-form>

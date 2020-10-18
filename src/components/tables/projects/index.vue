@@ -16,11 +16,16 @@
                         class="ml-1"
                         label
                         v-for="(author, i) in item.authors"
+                        :key="i"
                         >{{ author.first_name }} {{ author.last_name }}</v-chip
                     >
                 </template>
                 <template v-slot:item.guides="{ item }">
-                    <v-chip class="ml-1" label v-for="(guide, i) in item.guides"
+                    <v-chip
+                        :key="i"
+                        class="ml-1"
+                        label
+                        v-for="(guide, i) in item.guides"
                         >{{ guide.user.first_name }}
                         {{ guide.user.last_name }}</v-chip
                     >

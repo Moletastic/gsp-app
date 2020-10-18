@@ -1,16 +1,17 @@
-import { Component, Vue, Watch, Prop } from "vue-property-decorator";
+import { Component, Vue, Watch, Prop, Mixins } from "vue-property-decorator";
 import { $debug } from "@/utils";
 import { DataTable } from "@/types/vuetify";
 import { Milestone } from "@/types/core/project";
 import MilestoneForm from "@/components/form/milestone/index.vue";
-import moment from "moment";
+import CrudTableMixin from "@/components/mixins/crud-table";
+import { CRUDService } from "@/api/crud-service";
 
 @Component({
     components: {
         MilestoneForm
     }
 })
-export default class MilestonesTable extends Vue {
+export default class MilestonesTable extends CrudTableMixin<Milestone> {
     @Prop({
         default: () => {
             return new DataTable<Milestone>({
@@ -32,55 +33,12 @@ export default class MilestonesTable extends Vue {
             });
         }
     })
-    table!: DataTable<Milestone>;
+    readonly table!: DataTable<Milestone>;
 
-    milestone = new Milestone({});
+    api = new CRUDService<Milestone>("milestone");
+    entity = new Milestone({});
 
-    modal = false;
-    modal_mode = "CHECK";
-    selected_index = 0;
-
-    onCheckDetail(milestone: Milestone) {
-        this.selected_index = this.table.data.indexOf(milestone);
-        this.modal_mode = "CHECK";
-        this.milestone = Object.assign({}, milestone);
-        this.modal = true;
+    getNew(): Milestone {
+        return new Milestone({});
     }
-
-    drop() {
-        this.$delete(this.table.data, this.selected_index);
-        this.close();
-    }
-
-    editMilestone() {
-        this.modal_mode = "EDIT";
-    }
-
-    update() {
-        this.$set(
-            this.table.data,
-            this.selected_index,
-            Object.assign({}, this.milestone)
-        );
-        this.close();
-    }
-
-    add() {
-        this.milestone = new Milestone({});
-        this.modal_mode = "ADD";
-        this.modal = true;
-    }
-
-    create() {
-        const index = this.table.data.length;
-        this.$set(this.table.data, index, Object.assign({}, this.milestone));
-        this.close();
-    }
-
-    close() {
-        this.modal = false;
-        this.modal_mode = "CHECK";
-    }
-
-    moment = moment;
 }

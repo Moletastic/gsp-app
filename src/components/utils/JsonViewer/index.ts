@@ -15,8 +15,8 @@ export default class JSONViewer extends Vue {
     @Prop()
     verbose!: string;
 
-    title: string = "";
-    desc: string = "";
+    title = "";
+    desc = "";
 
     mapping: { [key: string]: string } = {
         students: "Estudiante",
