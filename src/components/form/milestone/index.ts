@@ -11,8 +11,11 @@ import { Mode } from "@/types/vuetify";
     }
 })
 export default class MilestoneForm extends Vue {
-    @Prop({ default: () => new Milestone() })
+    @Prop({ default: () => new Milestone({}) })
     form!: Milestone;
+
+    @Prop({ default: 0 })
+    project_id!: number;
 
     @Prop({ default: false })
     disabled!: boolean;
@@ -21,7 +24,7 @@ export default class MilestoneForm extends Vue {
     mode!: Mode;
 
     onDate(date: Moment) {
-        this.form.date = date;
+        this.form.date = date.toISOString();
     }
 
     save() {

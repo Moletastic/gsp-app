@@ -77,10 +77,10 @@ export class LoopBar implements ILoopBar {
 }
 
 export interface ITimeLineItem {
-    title: string
-    date: Moment | string
-    icon: string
-    color : string
+    title: string;
+    date: string | null;
+    icon: string;
+    color: string;
 }
 
 export type Mode = "ADD" | "EDIT" | "CHECK" | "DELETE";

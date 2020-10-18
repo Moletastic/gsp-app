@@ -18,7 +18,7 @@
                         label
                         @click="checkAuthor(author.id)"
                         class="clickable primary mr-2"
-                        >{{ author.user.nick }}</v-chip
+                        >{{ author.full_name }}</v-chip
                     >
                 </template>
             </h2>
@@ -46,72 +46,12 @@
                     >{{ subject.name }}</v-chip
                 >
             </h2>
-            <h2 class="body-2 pt-2">
-                Tags:
-                <v-chip
-                    label
-                    class="grey white--text mr-1"
-                    small
-                    close
-                    v-for="(tag, index) in project.tags"
-                    :key="index"
-                    >{{ tag }}</v-chip
-                >
-                <v-btn class="ml-2 green" depressed fab x-small
-                    ><v-icon small color="white">mdi-plus</v-icon></v-btn
-                >
-            </h2>
         </v-flex>
-        <v-flex xs4 align-self-center>
-            Estado de Proyecto: {{ fmt[project.state] }}
-        </v-flex>
-        <v-flex xs4 align-self-center>
-            <v-layout wrap v-if="project.state === 'IN_PROGRESS'">
-                <v-flex xs12>
-                    <v-btn small @click="changeState('PRESENTED')"
-                        >Presentar
-                        <v-icon small class="ml-2"
-                            >mdi-arrow-right-circle</v-icon
-                        ></v-btn
-                    >
-                </v-flex>
-            </v-layout>
-            <v-layout wrap v-if="project.state === 'PRESENTED'">
-                <v-flex xs12>
-                    <v-btn small @click="changeState('CHECKED')"
-                        >Revisar
-                        <v-icon small class="ml-2"
-                            >mdi-arrow-right-circle</v-icon
-                        ></v-btn
-                    >
-                </v-flex>
-            </v-layout>
-            <v-layout wrap v-if="project.state === 'CHECKED'">
-                <v-flex xs12>
-                    <v-btn
-                        @click="changeState('APPROVED')"
-                        class="mr-2"
-                        color="green"
-                        small
-                        >Aprobar
-                        <v-icon small class="ml-2">mdi-check</v-icon></v-btn
-                    >
-                    <v-btn @click="changeState('REJECTED')" color="red" small
-                        >Rechazar
-                        <v-icon small class="ml-2">mdi-close</v-icon></v-btn
-                    >
-                </v-flex>
-            </v-layout>
-            <v-layout wrap v-if="project.state === 'APPROVED'">
-                <v-flex xs12>
-                    <v-btn small @click="changeState('IN_PROGRESS2')"
-                        >Pasar a semestre 2
-                        <v-icon small class="ml-2"
-                            >mdi-arrow-right-circle</v-icon
-                        ></v-btn
-                    >
-                </v-flex>
-            </v-layout>
+        <v-flex xs12>
+            <state-switch
+                @change="onChangeState"
+                :state="project.project_state"
+            ></state-switch>
         </v-flex>
         <v-flex xs8 class="mb-5">
             <v-card outlined>
@@ -130,7 +70,7 @@
                                 >
                                     <td>
                                         <v-icon small class="mr-2">{{
-                                            link.type.icon
+                                            link.link_type.icon
                                         }}</v-icon>
                                         <a :href="link.url" target="_blank">{{
                                             link.url
@@ -143,7 +83,41 @@
                 </v-card-text>
             </v-card>
         </v-flex>
-        <v-flex xs4></v-flex>
+        <v-flex xs8 class="mb-5">
+            <v-card outlined>
+                <v-card-text class="px-0 py-0">
+                    <v-simple-table dense>
+                        <template v-slot:default>
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Evaluaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(review, index) in project.reviews"
+                                    :key="index"
+                                >
+                                    <td>
+                                        {{ review.name }}
+                                    </td>
+                                    <td>
+                                        Hecha en {{ review.created_at | date }}
+                                    </td>
+                                    <td>
+                                        <a
+                                            :href="review.file_url"
+                                            target="_blank"
+                                            >Ir a Evaluación</a
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </template>
+                    </v-simple-table>
+                </v-card-text>
+            </v-card>
+        </v-flex>
         <v-flex xs8>
             <v-layout wrap>
                 <v-flex xs12>
@@ -170,8 +144,16 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <commit-table
+                                        :project_id="project.id"
                                         :table="commitsTable"
                                     ></commit-table>
+                                </v-card-text>
+                            </v-card>
+                            <v-card class="mt-2" outlined>
+                                <v-card-text>
+                                    <progress-table
+                                        :table="progressTable"
+                                    ></progress-table>
                                 </v-card-text>
                             </v-card>
                         </v-tab-item>
@@ -209,8 +191,22 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <commit-table
+                                        :project_id="project.id"
                                         :table="commitsTable"
                                     ></commit-table>
+                                </v-card-text>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab :href="'#tab-5'">
+                            Progresos
+                            <v-icon>mdi-layers-plus</v-icon>
+                        </v-tab>
+                        <v-tab-item :value="'tab-5'" class="mt-2" outlined>
+                            <v-card class="mt-2" outlined>
+                                <v-card-text>
+                                    <progress-table
+                                        :table="progressTable"
+                                    ></progress-table>
                                 </v-card-text>
                             </v-card>
                         </v-tab-item>
@@ -224,8 +220,8 @@
         <v-layout row justify-center>
             <v-dialog v-model="userDetails" :max-width="650">
                 <json-viewer
-                    :verbose="'user'"
-                    :entity="'students'"
+                    :verbose="'students'"
+                    :entity="'edu/student'"
                     :entity_id="selected_entity_id"
                 ></json-viewer>
             </v-dialog>

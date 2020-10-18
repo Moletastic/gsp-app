@@ -1,36 +1,38 @@
 import { Moment } from "moment";
 import moment from "moment";
 import { generateID } from "@/utils";
+import { IGSPObject, GSPObject } from "../base";
 
-export interface ICommit {
-    id: string;
+export interface ICommit extends IGSPObject {
     title: string;
     desc: string;
     solved: boolean;
-    solved_at: Moment;
-    limit_date?: Moment;
+    solved_at: string | null;
+    limit_date?: string | null;
+    project_id: number | null;
 }
 
 // Acuerdo
-export class Commit implements ICommit {
-    id!: string;
+export class Commit extends GSPObject implements ICommit {
     title!: string;
     desc!: string;
-    solved_at!: Moment;
+    solved_at!: string | null;
     solved: boolean = false;
-    limit_date!: Moment;
+    limit_date!: string | null;
+    project_id!: number | null;
 
-    constructor(partial?: Partial<Commit>) {
-        this.id = partial?.id || generateID("COM");
+    constructor(partial: Partial<Commit>) {
+        super(partial);
         this.title = partial?.title || "Acuerdo #";
         this.desc = partial?.desc || "";
-        this.solved_at = moment(partial?.solved_at) || moment(new Date());
+        this.solved_at = partial.solved_at || null;
         this.solved = partial?.solved || false;
-        this.limit_date = moment(partial?.limit_date) || moment(new Date());
+        this.limit_date = partial.limit_date || null;
+        this.project_id = partial.project_id || null;
     }
 
     solve() {
-        this.solved_at = moment(new Date());
+        this.solved_at = moment(new Date()).toISOString();
         this.solved = true;
     }
 

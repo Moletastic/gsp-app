@@ -1,90 +1,81 @@
 import { ILink, Link } from "./link";
 
-import { IProgress } from "./progress";
+import { IProgress, Progress } from "./progress";
 import { ITag } from "./tag";
 import { IMilestone, Milestone } from "./milestone";
 import { IMeet, Meet } from "./meet";
-import { IStudent, Student } from "../access/student";
 import { ITeacher, Teacher } from "../access/teacher";
 import { generateID, $debug, make_enum } from "@/utils";
 import { Commit } from "./commit";
+import { IStudent, Student } from "../education";
+import { IReview, Review } from "./rubric";
+import { IGSPObject, GSPObject } from "../base";
 
-export interface ISubject {
-    id: string;
+export interface ISubject extends IGSPObject {
     name: string;
     icon: string;
 }
 
-export class Subject implements ISubject {
-    id!: string;
+export class Subject extends GSPObject implements ISubject {
     name!: string;
     icon!: string;
 
-    constructor(name: string, icon?: string) {
-        this.id = generateID("sub");
-        this.name = name;
-        if (icon) {
-            this.icon = icon;
-        }
+    constructor(partial: Partial<ISubject>) {
+        super(partial);
+        this.name = partial.name || "";
+        this.icon = partial.icon || "";
     }
 }
 
-export const ProjectState = make_enum([
-    "CREATED",
-    "STARTED",
-    "IN_PROGRESS",
-    "CHECKED",
-    "PRESENTED",
-    "APPROVED",
-    "IN_PROGRESS2",
-    "CHECKED2",
-    "PRESENTED2",
-    "APPROVED2",
-    "REJECTED",
-    "FINISHED",
-    "CERTIFICATED"
-]);
+export enum FmtProjectState {
+    "CREATED" = "Creado",
+    "STARTED" = "Iniciado",
+    "IN_PROGRESS" = "Semestre 1: Desarrollando",
+    "PRESENTED" = "Semestre 1: Presentando",
+    "CHECKED" = "Semestre 1: En Revisión",
+    "APPROVED" = "Semestre 1: Aprobado",
+    "IN_PROGRESS2" = "Semestre 2: Desarrollando",
+    "PRESENTED2" = "Semestre 2: Presentando",
+    "APPROVED2" = "Semestre 2: Aprobado",
+    "REJECTED" = "Rechazado",
+    "FINISHED" = "Terminado",
+    "CERTIFICATED" = "Condición de Titulación"
+}
 
-export type ProjectState = keyof typeof ProjectState;
+export interface IProjectState extends IGSPObject {
+    name: string;
+}
 
-export const FormatProjectState: { [key: string]: string } = {
-    CREATED: "Creado",
-    STARTED: "Iniciado",
-    IN_PROGRESS: "Semestre 1: En desarrollo",
-    PRESENTED: "Semestre 1: Presentado",
-    CHECKED: "Semestre 1: Revisado",
-    APPROVED: "Semestre 1: Aprobado",
-    IN_PROGRESS2: "Semestre 2: En desarrollo",
-    PRESENTED2: "Semestre 2: Presentado",
-    CHECKED2: "Semestre 2: Revisado",
-    APPROVED2: "Semestre 2: Aprobado",
-    REJECTED: "Rechazado",
-    FINISHED: "Finalizado",
-    CERTIFICATED: "Titulado"
-};
+export class ProjectState extends GSPObject implements IProjectState {
+    name: string;
 
-export const ProjectType = make_enum([
-    "RESEARCH",
-    "PROTOTYPE",
-    "APPLICATION",
-    "DATA_SCIENCE"
-]);
+    constructor(partial: Partial<IProjectState>) {
+        super(partial);
+        this.name = partial.name || "CREATED";
+    }
 
-export type ProjectType = keyof typeof ProjectType;
+    get formated(): string {
+        return (
+            FmtProjectState[<keyof typeof FmtProjectState>this.name] ||
+            this.name
+        );
+    }
+}
 
-export type FMTProjectType = {
-    [type in ProjectType]: string;
-};
+export interface IProjectType extends IGSPObject {
+    name: string;
+}
 
-export const FormatProjectType: FMTProjectType = {
-    APPLICATION: "Aplicación",
-    DATA_SCIENCE: "Ciencia de Datos",
-    PROTOTYPE: "Prototipo",
-    RESEARCH: "Investigación"
-};
+export class ProjectType extends GSPObject implements IProjectType {
+    name: string;
 
-export interface IProject {
-    id: string;
+    constructor(partial: Partial<IProjectType>) {
+        super(partial);
+        this.name = partial.name || "";
+    }
+}
+
+export interface IProject extends IGSPObject {
     title: string;
     desc: string;
     authors: IStudent[];
@@ -96,12 +87,14 @@ export interface IProject {
     progress: Progress[];
     tags: string[];
     commits: Commit[];
-    state: ProjectState;
-    project_type: ProjectType;
+    reviews: IReview[];
+    project_state: IProjectState | null;
+    project_state_id: number;
+    project_type: IProjectType | null;
+    project_type_id: number;
 }
 
-export class Project implements IProject {
-    id!: string;
+export class Project extends GSPObject implements IProject {
     title!: string;
     desc!: string;
     type!: string;
@@ -114,33 +107,38 @@ export class Project implements IProject {
     progress: Progress[] = [];
     tags: string[] = [];
     commits: Commit[] = [];
-    state: ProjectState = ProjectState.CREATED;
-    project_type!: ProjectType;
+    reviews: Review[] = [];
+    project_state: ProjectState | null;
+    project_state_id: number;
+    project_type: IProjectType | null;
+    project_type_id: number;
 
-    constructor(obj?: Partial<Project>) {
-        if (obj) {
-            this.id = obj.id || generateID("pro");
-            this.title = obj.title || "";
-            this.desc = obj.desc || "";
-            this.type = obj.type || "";
-            this.authors = obj.authors || [];
-            this.guides = obj.guides || [];
-            this.links = obj.links || [];
-            this.subjects = obj.subjects || [];
-            this.meets = obj.meets?.map(meet => new Meet(meet)) || [];
-            this.milestones =
-                obj.milestones?.map(mil => new Milestone(mil)) || [];
-            this.progress = obj.progress || [];
-            this.tags = obj.tags || [];
-            if(typeof obj?.tags === "string"){
-                this.tags = (<string>obj?.tags).split(";")
-            } else {
-                this.tags = obj?.tags || []
-            }
-            this.commits = obj.commits?.map(com => new Commit(com)) || [];
-            this.state = obj.state || ProjectState.CREATED;
-            this.project_type = obj.project_type || ProjectType.APPLICATION;
+    constructor(partial: Partial<IProject>) {
+        super(partial);
+        this.title = partial.title || "";
+        this.desc = partial.desc || "";
+        this.authors = partial.authors?.map(a => new Student(a)) || [];
+        this.guides = partial.guides || [];
+        this.links = partial.links || [];
+        this.reviews = partial.reviews || [];
+        this.subjects = partial.subjects || [];
+        this.meets = partial.meets?.map(meet => new Meet(meet)) || [];
+        this.milestones =
+            partial.milestones?.map(mil => new Milestone(mil)) || [];
+        this.progress = partial.progress || [];
+        this.tags = partial.tags || [];
+        if (typeof partial?.tags === "string") {
+            this.tags = (<string>partial?.tags).split(";");
+        } else {
+            this.tags = partial?.tags || [];
         }
+        this.commits = partial.commits?.map(com => new Commit(com)) || [];
+        this.project_state_id = partial.project_state_id || 0;
+        this.project_state = partial.project_state
+            ? new ProjectState(partial.project_state)
+            : null;
+        this.project_type_id = partial.project_type_id || 0;
+        this.project_type = partial.project_type || null;
     }
 
     public get_done_meets() {

@@ -22,9 +22,7 @@
                     ></v-icon>
                 </template>
                 <template v-slot:item.limit_date="{ item }">
-                    <v-chip>{{
-                        moment(item.limit_date).format("DD MMMM - HH:mm")
-                    }}</v-chip>
+                    <v-chip>{{ item.limit_date | datetime }}</v-chip>
                 </template>
                 <template v-slot:item._actions="{ item }">
                     <v-btn

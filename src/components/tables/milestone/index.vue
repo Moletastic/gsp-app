@@ -22,7 +22,7 @@
                     ></v-icon>
                 </template>
                 <template v-slot:item.date="{ item }">
-                    <v-chip>{{ moment(item.date).format("DD MMMM") }}</v-chip>
+                    <v-chip>{{ item.date | datetime }}</v-chip>
                 </template>
                 <template v-slot:item._actions="{ item }">
                     <v-btn

@@ -11,8 +11,11 @@ import moment, { Moment } from "moment";
     }
 })
 export default class CommitForm extends Vue {
-    @Prop({ default: () => new Commit() })
+    @Prop({ default: () => new Commit({}) })
     form!: Commit;
+
+    @Prop({ default: 0 })
+    project_id!: number;
 
     @Prop({ default: false })
     disabled!: boolean;
@@ -21,7 +24,7 @@ export default class CommitForm extends Vue {
     mode!: Mode;
 
     onDate(date: Moment) {
-        this.form.limit_date = date;
+        this.form.limit_date = date.toISOString();
     }
 
     changeSolved() {
@@ -29,7 +32,7 @@ export default class CommitForm extends Vue {
     }
 
     solve() {
-        this.form.solved_at = moment(new Date());
+        this.form.solved_at = moment(new Date()).toISOString();
     }
 
     unsolve() {}

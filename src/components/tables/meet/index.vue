@@ -38,7 +38,7 @@
                 </template>
                 <template v-slot:item.date="{ item }">
                     <v-chip>
-                        {{ moment(item.date).format("DD MMMM - HH:mm") }}
+                        {{ item.date | datetime }}
                     </v-chip>
                 </template>
                 <template v-slot:item._actions="{ item }">
@@ -55,8 +55,9 @@
         <v-flex xs12>
             <v-dialog v-model="modal" width="760px">
                 <v-card outlined>
-                    <v-card-title>Reunión: {{ meet.name }}
-<v-btn
+                    <v-card-title
+                        >Reunión: {{ meet.name }}
+                        <v-btn
                             v-if="modal_mode === 'CHECK'"
                             @click="edit"
                             class="ml-5 pl-2"
@@ -70,7 +71,6 @@
                             small
                             >Eliminar</v-btn
                         >
-
                     </v-card-title>
                     <v-card-text>
                         <meet-form

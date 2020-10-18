@@ -4,6 +4,7 @@ import { DataTable, Mode } from "@/types/vuetify";
 import CommitForm from "@/components/form/commit/index.vue";
 import { Commit } from "@/types/core/project";
 import moment from "moment";
+import { CRUDService } from "@/api/crud-service";
 
 @Component({
     components: {
@@ -11,6 +12,11 @@ import moment from "moment";
     }
 })
 export default class CommitTable extends Vue {
+    @Prop()
+    readonly project_id!: number;
+
+    api_service = new CRUDService("commit");
+
     @Prop({
         default: () => {
             return new DataTable<Commit>({
@@ -35,7 +41,7 @@ export default class CommitTable extends Vue {
     table!: DataTable<Commit>;
     moment = moment;
 
-    commit = new Commit();
+    commit = new Commit({});
 
     modal = false;
     modal_mode: Mode = "CHECK";
@@ -49,8 +55,15 @@ export default class CommitTable extends Vue {
         this.modal = true;
     }
 
-    drop() {
-        this.$delete(this.table.data, this.selected_index);
+    async drop() {
+        const commit = this.table.data[this.selected_index];
+        try {
+            const result = await this.api_service.delete(commit);
+            this.$delete(this.table.data, this.selected_index);
+            $debug("log", result);
+        } catch (err) {
+            $debug("error", err);
+        }
         this.close();
     }
 
@@ -58,24 +71,42 @@ export default class CommitTable extends Vue {
         this.modal_mode = "EDIT";
     }
 
-    update() {
+    async update() {
         this.$set(
             this.table.data,
             this.selected_index,
             Object.assign({}, this.commit)
         );
+        const commit = this.table.data[this.selected_index];
+        commit.project_id = this.project_id;
+        try {
+            const result = await this.api_service.update(commit);
+            $debug("log", result);
+        } catch (err) {
+            $debug("error", err);
+        }
         this.close();
     }
 
     add() {
-        this.commit = new Commit();
+        this.commit = new Commit({});
         this.modal_mode = "ADD";
         this.modal = true;
     }
 
-    create() {
+    async create() {
         const index = this.table.data.length;
         this.$set(this.table.data, index, Object.assign({}, this.commit));
+        const commit = this.table.data[index];
+        $debug("log", commit);
+        $debug("log", this.project_id);
+        commit.project_id = this.project_id;
+        try {
+            const result = await this.api_service.create(commit);
+            $debug("log", result);
+        } catch (err) {
+            $debug("error", err);
+        }
         this.close();
     }
 

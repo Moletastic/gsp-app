@@ -1,19 +1,21 @@
-import { IUser, User } from './user';
+import { IUser, User } from "./user";
+import { IGSPObject, GSPObject } from "../base";
 
-export interface ITeacher {
-    id: string
-    user: IUser
-    entry_year: number
+export interface ITeacher extends IGSPObject {
+    user: IUser | null;
+    user_id: number;
+    entry_year: number;
 }
 
-export class Teacher implements ITeacher {
+export class Teacher extends GSPObject implements ITeacher {
+    user: IUser | null;
+    user_id: number;
+    entry_year: number;
 
-    id !: string
-    user: User = new User("")
-    entry_year = 2010
-
-    constructor(user: User){
-        this.user = user;    
+    constructor(partial: Partial<ITeacher>) {
+        super(partial);
+        this.user = partial.user || null;
+        this.user_id = partial.user_id || 0;
+        this.entry_year = partial.entry_year || 0;
     }
-
 }

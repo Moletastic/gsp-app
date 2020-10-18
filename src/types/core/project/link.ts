@@ -1,4 +1,5 @@
-import { generateID } from '@/utils'
+import { generateID } from "@/utils";
+import { GSPObject, IGSPObject } from "../base";
 
 /* export enum LinkType {
     COMMON = "Normal",
@@ -7,46 +8,40 @@ import { generateID } from '@/utils'
     GIT_REPO = "Repositorio Git"
 } */
 
-export interface ILinkType {
-    id: string
-    name: string
-    icon: string
+export interface ILinkType extends IGSPObject {
+    name: string;
+    icon: string;
 }
 
-export class LinkType implements ILinkType {
-    id !: string
-    name !: string
-    icon !: string
+export class LinkType extends GSPObject implements ILinkType {
+    name!: string;
+    icon!: string;
 
-    constructor(partial: Partial<ILinkType>){
-        this.id = partial.id || generateID("ltype");
+    constructor(partial: Partial<ILinkType>) {
+        super(partial);
         this.name = partial.name || "";
         this.icon = partial.icon || "";
     }
 }
 
-export enum LinkIcon {
-    COMMON = "https://image.flaticon.com/icons/svg/1077/1077180.svg",
-    DRIVE = "https://image.flaticon.com/icons/svg/2111/2111436.svg",
-    ONEDRIVE = "https://image.flaticon.com/icons/svg/873/873136.svg",
-    GIT_REPO = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Ficons.iconarchive.com%2Ficons%2Fpapirus-team%2Fpapirus-apps%2F256%2Fgit-icon.png&f=1&nofb=1",
+export interface ILink extends IGSPObject {
+    url: string;
+    link_type_id: number | null;
+    link_type: ILinkType | null;
+    project_id: number;
 }
 
-export interface ILink {
-    id: string
-    url: string
-    type : ILinkType
-}
+export class Link extends GSPObject implements ILink {
+    url: string;
+    link_type_id: number | null;
+    link_type: ILinkType | null;
+    project_id: number;
 
-export class Link implements ILink {
-    id !: string
-    url !: string
-    type !: LinkType
-
-    constructor(partial: Partial<ILink>){
-        this.id = partial.id || generateID("l");
+    constructor(partial: Partial<ILink>) {
+        super(partial);
         this.url = partial.url || "";
-        this.type = new LinkType({...partial.type}) || new LinkType({});
+        this.link_type_id = partial.link_type_id || 0;
+        this.link_type = partial.link_type || null;
+        this.project_id = partial.project_id || 0;
     }
-
 }

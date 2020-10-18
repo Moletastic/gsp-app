@@ -34,7 +34,7 @@ export default class MilestonesTable extends Vue {
     })
     table!: DataTable<Milestone>;
 
-    milestone = new Milestone();
+    milestone = new Milestone({});
 
     modal = false;
     modal_mode = "CHECK";
@@ -66,7 +66,7 @@ export default class MilestonesTable extends Vue {
     }
 
     add() {
-        this.milestone = new Milestone();
+        this.milestone = new Milestone({});
         this.modal_mode = "ADD";
         this.modal = true;
     }
