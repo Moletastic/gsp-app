@@ -1,0 +1,18 @@
+{
+    "$vuetify": {
+        "noDataText": "Sin datos",
+        "dataFooter": {
+            "itemsPerPageAll": "Todo",
+            "rowsPerPageText": "Elementos por página",
+            "pageText": "{0}-{1} de {2}",
+            "nextPage": "Siguiente",
+            "prevPage": "Anterior"
+        },
+        "dataTable": {
+            "ariaLabel": {
+                "sortNone": "Sin Filtro",
+                "activateAscending": "Orden Ascendente"
+            }
+        }
+    }
+}

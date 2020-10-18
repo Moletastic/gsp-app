@@ -5,6 +5,7 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import "moment/locale/es";
 import moment from "moment";
+import i18n from './i18n'
 Vue.config.productionTip = false;
 Vue.config.silent = true;
 Vue.prototype.$moment = moment;
@@ -21,5 +22,6 @@ new Vue({
     router,
     store,
     vuetify,
+    i18n,
     render: h => h(App)
 }).$mount("#app");

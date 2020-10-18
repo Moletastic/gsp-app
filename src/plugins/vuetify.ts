@@ -2,6 +2,7 @@ import "@mdi/font/css/materialdesignicons.css";
 import Vue from "vue";
 import Vuetify, { colors } from "vuetify/lib";
 import * as es from "vuetify/es5/locale/es";
+import i18n from "@/i18n";
 
 Vue.use(Vuetify);
 
@@ -25,6 +26,7 @@ export default new Vuetify({
         locales: {
             es
         },
-        current: "es"
+        current: "es",
+        t: (key, ...params) => i18n.t(key, params) as string
     }
 });
