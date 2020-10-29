@@ -39,4 +39,9 @@ export class Milestone extends GSPObject implements IMilestone {
         const { id, title, desc, file_url, solved, date } = this;
         return { id, title, desc, file_url, solved, date };
     }
+
+    clean(): Milestone {
+        const obj = Object.assign({}, this);
+        return obj;
+    }
 }

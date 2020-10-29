@@ -42,6 +42,21 @@ export enum FmtProjectState {
     "CERTIFICATED" = "Condición de Titulación"
 }
 
+export const ProjectTypeEnum = make_enum([
+    "RESEARCH",
+    "PROTOTYPE",
+    "APPLICATION",
+    "DATA_SCIENCE"
+]);
+export type ProjectTypeEnum = keyof typeof ProjectTypeEnum;
+
+export const FmtProjectType: { [key in ProjectTypeEnum]: string } = {
+    RESEARCH: "Investigación",
+    PROTOTYPE: "Prototipo",
+    APPLICATION: "Aplicación",
+    DATA_SCIENCE: "Ciencia de Datos"
+};
+
 export interface IProjectState extends IGSPObject {
     name: string;
 }
@@ -94,6 +109,13 @@ export interface IProject extends IGSPObject {
     project_type_id: number;
 }
 
+export interface iProject extends IGSPObject {
+    title: string;
+    desc: string;
+    project_state_id: number;
+    project_type_id: number;
+}
+
 export class Project extends GSPObject implements IProject {
     title!: string;
     desc!: string;
@@ -118,10 +140,10 @@ export class Project extends GSPObject implements IProject {
         this.title = partial.title || "";
         this.desc = partial.desc || "";
         this.authors = partial.authors?.map(a => new Student(a)) || [];
-        this.guides = partial.guides || [];
-        this.links = partial.links || [];
-        this.reviews = partial.reviews || [];
-        this.subjects = partial.subjects || [];
+        this.guides = partial.guides?.map(g => new Teacher(g)) || [];
+        this.links = partial.links?.map(l => new Link(l)) || [];
+        this.reviews = partial.reviews?.map(r => new Review(r)) || [];
+        this.subjects = partial.subjects?.map(s => new Subject(s)) || [];
         this.meets = partial.meets?.map(meet => new Meet(meet)) || [];
         this.milestones =
             partial.milestones?.map(mil => new Milestone(mil)) || [];
@@ -141,22 +163,69 @@ export class Project extends GSPObject implements IProject {
         this.project_type = partial.project_type || null;
     }
 
-    public get_done_meets() {
-        return this.meets.reduce((index, val) => {
-            return val.done ? 1 : 0;
-        }, 0);
+    //public get_done_meets() : number{
+    //return this.meets.reduce((i: number, value: Meet)  => {
+    //return value.done ? 1 : 0;
+    //}, 0);
+    //}
+
+    //public get_solved_milestone() : number{
+    //return this.milestones.reduce((i: number, value: Milestone) => {
+    //return value.solved ? 1 : 0;
+    //}, 0);
+    //}
+
+    public getFmtType(): string {
+        if (this.project_type && this.project_type.name) {
+            const name: ProjectTypeEnum = this.project_type
+                .name as ProjectTypeEnum;
+            return FmtProjectType[name];
+        }
+        return "Desconocido";
     }
 
-    public get_solved_milestone() {
-        return this.milestones.reduce((index, val) => {
-            return val.solved ? 1 : 0;
-        }, 0);
+    getClean(): iProject {
+        const {
+            id,
+            created_at,
+            updated_at,
+            deleted_at,
+            is_valid,
+            title,
+            desc,
+            project_type_id,
+            project_state_id,
+            entity,
+            uid
+        } = this;
+        return {
+            id,
+            created_at,
+            updated_at,
+            deleted_at,
+            is_valid,
+            title,
+            desc,
+            project_type_id,
+            project_state_id,
+            entity,
+            uid
+        };
     }
 
-    getClean() {
-        const milestones = this.milestones.map(milestone =>
-            milestone.getClean()
-        );
-        return { ...this, milestones, tags: this.tags.join(";") };
+    clean(): Project {
+        const obj = Object.assign({}, this);
+        obj.meets = [];
+        obj.milestones = [];
+        obj.commits = [];
+        obj.subjects = [];
+        obj.links = [];
+        obj.authors = [];
+        obj.guides = [];
+        obj.progress = [];
+        obj.reviews = [];
+        obj.project_state = null;
+        obj.project_type = null;
+        return obj;
     }
 }

@@ -32,7 +32,7 @@
                                     v-model="filters.teacher"
                                     label="Seleccionar profesor: "
                                     :items="teachers"
-                                    item-text="user.nick"
+                                    item-text="account.nick"
                                     return-object
                                 ></v-autocomplete>
                             </v-flex>
@@ -64,7 +64,7 @@
                 <v-icon right>mdi-plus</v-icon>
             </v-btn>
         </v-flex>
-        <project-table :table="table"></project-table>
+        <project-table :loading="loading" :table="table"></project-table>
         <v-dialog v-model="modal" width="760px">
             <v-layout wrap>
                 <v-flex xs12>

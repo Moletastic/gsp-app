@@ -4,7 +4,6 @@ import { Project, ProjectState, ProjectType } from "@/types/core/project";
 import { Teacher } from "@/types/core/access/teacher";
 import ProjectTable from "@/components/tables/projects/index.vue";
 import ProjectForm from "@/components/form/project/index.vue";
-import axios, { AxiosResponse } from "axios";
 import { $api } from "@/api";
 
 import { DataTable } from "@/types/vuetify";
@@ -40,7 +39,7 @@ export default class ProjectsView extends Vue {
                 value: "_actions"
             }
         ],
-        rowsPerPageText: "Hitos por página"
+        rowsPerPageText: "Proyectos por página"
     });
 
     teachers: Teacher[] = [];
@@ -64,21 +63,24 @@ export default class ProjectsView extends Vue {
             solved_milestones: number;
         };
     } = {};
+    loading = false;
 
     modal = false;
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
+        this.loading = true;
         this.teachers = await this.getTeachers();
         this.projects = await this.getProjects();
         this.table.data = this.projects;
+        this.loading = false;
         //this.$store.commit("set_projects", this.projects);
     }
 
-    applyFilter() {
+    applyFilter(): void {
         let filteredProjects: Project[] = this.$store.state.projects;
         const { name, state, teacher, year, project_type } = this.filters;
         if (name && name !== "") {
@@ -99,7 +101,7 @@ export default class ProjectsView extends Vue {
         this.projects = filteredProjects;
     }
 
-    clearFilter() {
+    clearFilter(): void {
         this.projects = this.$store.state.projects;
         this.filters = {
             name: undefined,
@@ -110,15 +112,15 @@ export default class ProjectsView extends Vue {
         };
     }
 
-    openModal() {
+    openModal(): void {
         this.modal = true;
     }
 
-    createNewProject() {
+    createNewProject(): void {
         this.$router.push({ name: "new-project" });
     }
 
-    goProject(id: string) {
+    goProject(id: string): void {
         this.$router.push({ name: "project", params: { id } });
     }
 

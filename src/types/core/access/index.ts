@@ -1,5 +1,4 @@
 import { IUser } from "./user";
-import { GSPObject } from "../base";
 
 export interface ILoginForm {
     email: string;
@@ -16,3 +15,13 @@ export type ISignupForm = Omit<
     | "updated_at"
     | "deleted_at"
 >;
+
+export interface TokenPayload {
+    exp: number
+    is_admin: boolean
+    user: {
+        account: IUser,
+        account_id: number,
+        id: number | null
+    }
+}

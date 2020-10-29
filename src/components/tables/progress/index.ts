@@ -1,11 +1,16 @@
 import { Vue, Component, Prop, Watch, Mixins } from "vue-property-decorator";
 import { $debug } from "@/utils/";
 import { DataTable } from "@/types/vuetify";
-import { Progress, IProgress } from "@/types/core/project";
+import { Progress } from "@/types/core/project";
+import ProgressForm from "@/components/form/progress/index.vue";
 import CrudTableMixin from "@/components/mixins/crud-table";
 import { CRUDService } from "@/api/crud-service";
 
-@Component
+@Component({
+    components: {
+        ProgressForm
+    }
+})
 export default class ProgressTable extends CrudTableMixin<Progress> {
     @Prop({
         default: () => {

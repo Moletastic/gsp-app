@@ -14,8 +14,8 @@ import StudentForm from "@/components/form/user/student/index.vue";
 import TeacherForm from "@/components/form/user/teacher/index.vue";
 import { Teacher } from "@/types/core/access/teacher";
 import { $api } from "@/api";
-import moment, { Moment } from "moment";
 import { Student } from "@/types/core/education";
+import { Moment } from "moment";
 
 @Component({
     components: { LinkForm, DateField, TimeLine, StudentForm, TeacherForm }
@@ -87,7 +87,7 @@ export default class ProjectForm extends Vue {
         this.form.links.push(
             new Link({
                 link_type: this.linktypes[0],
-                link_type_id: this.linktypes[0].id
+                link_type_id: this.linktypes[0]?.id || null
             })
         );
     }

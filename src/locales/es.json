@@ -13,6 +13,9 @@
                 "sortNone": "Sin Filtro",
                 "activateAscending": "Orden Ascendente"
             }
+        },
+        "dataIterator": {
+            "loadingText": "Cargando registros"
         }
     }
 }

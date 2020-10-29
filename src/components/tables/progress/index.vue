@@ -13,13 +13,13 @@
                     itemsPerPageText: table.rowsPerPageText
                 }"
             >
-                <template v-slot:item.solved="{ item }">
+                <template v-slot:[`item.solved`]="{ item }">
                     {{ item.name }}
                 </template>
-                <template v-slot:item.created_at="{ item }">
+                <template v-slot:[`item.created_at`]="{ item }">
                     <v-chip>{{ item.created_at | date }}</v-chip>
                 </template>
-                <template v-slot:item._actions="{ item }">
+                <template v-slot:[`item._actions`]="{ item }">
                     <v-btn
                         outlined
                         color="indigo"
@@ -37,7 +37,7 @@
                         >Progreso: {{ entity.title }}
                         <v-btn
                             v-if="modal_mode === 'CHECK'"
-                            @click=""
+                            @click="edit"
                             class="ml-5 pl-2"
                             small
                             >Editar</v-btn

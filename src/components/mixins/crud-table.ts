@@ -3,9 +3,14 @@ import { $debug } from "@/utils";
 import { DataTable, Mode } from "@/types/vuetify";
 import { GSPObject, IGSPObject } from "@/types/core/base";
 import { CRUDService } from "@/api/crud-service";
+import { Milestone, Meet } from "@/types/core/project";
 
 class CustomGSPObject extends GSPObject {
     project_id!: number;
+
+    clean(): this {
+        return this.clean();
+    }
 }
 
 export interface CrudTableProps<T> {
@@ -43,9 +48,13 @@ export default class CrudTableMixin<T extends CustomGSPObject> extends Vue {
     }
 
     async drop(): Promise<void> {
-        const entity = this.table.data[this.selected_index];
+        const entity = Object.assign(
+            this.getNew(),
+            this.table.data[this.selected_index]
+        );
+        const obj = entity.clean() as T;
         try {
-            const result = await this.api.delete(entity);
+            const result = await this.api.delete(obj);
             this.$delete(this.table.data, this.selected_index);
             $debug("log", result);
         } catch (err) {
@@ -59,15 +68,12 @@ export default class CrudTableMixin<T extends CustomGSPObject> extends Vue {
     }
 
     async update(): Promise<void> {
-        this.$set(
-            this.table.data,
-            this.selected_index,
-            Object.assign({}, this.entity)
-        );
-        const entity = this.table.data[this.selected_index];
+        const entity = Object.assign(this.getNew(), this.entity);
         entity.project_id = this.project_id;
+        const obj = entity.clean();
         try {
-            const result = await this.api.update(entity);
+            const result = await this.api.update(obj);
+            this.$set(this.table.data, this.selected_index, entity);
             $debug("log", result);
         } catch (err) {
             $debug("error", err);
@@ -88,12 +94,13 @@ export default class CrudTableMixin<T extends CustomGSPObject> extends Vue {
 
     async create(): Promise<void> {
         const index = this.table.data.length;
-        this.$set(this.table.data, index, Object.assign({}, this.entity));
-        const entity = this.table.data[index];
+        const entity = Object.assign(this.getNew(), this.entity);
         entity.project_id = this.project_id;
+        const obj = entity.clean();
         try {
-            const result = await this.api.create(entity);
+            const result = await this.api.create(obj);
             $debug("log", result);
+            this.$set(this.table.data, index, Object.assign({}, this.entity));
         } catch (err) {
             $debug("error", err);
         }

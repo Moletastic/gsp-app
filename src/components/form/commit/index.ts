@@ -3,7 +3,7 @@ import { $debug } from "@/utils";
 import DateField from "@/components/fields/date/index.vue";
 import { Commit } from "@/types/core/project";
 import { Mode } from "@/types/vuetify";
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 
 @Component({
     components: {
@@ -15,29 +15,32 @@ export default class CommitForm extends Vue {
     form!: Commit;
 
     @Prop({ default: 0 })
-    project_id!: number;
+    readonly project_id!: number;
 
     @Prop({ default: false })
-    disabled!: boolean;
+    readonly disabled!: boolean;
 
     @Prop({ default: "CHECK" })
-    mode!: Mode;
+    readonly mode!: Mode;
 
-    onDate(date: Moment) {
+    onDate(date: Moment): void {
         this.form.limit_date = date.toISOString();
     }
 
-    changeSolved() {
+    changeSolved(): void {
         this.form.solved ? this.solve() : this.unsolve();
     }
 
-    solve() {
-        this.form.solved_at = moment(new Date()).toISOString();
+    solve(): void {
+        this.form.solved_at = this.$moment(new Date()).toISOString();
     }
 
-    unsolve() {}
+    unsolve(): void {
+        this.form.solved_at = null;
+        this.form.solved = false;
+    }
 
-    get label() {
+    get label(): string {
         return this.disabled ? "Fecha Límite" : "Ingresar fecha límite";
     }
 }

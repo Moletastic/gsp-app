@@ -6,7 +6,7 @@ export interface IUser extends IGSPObject {
     nick: string;
     email: string;
     password: string | null;
-    user_type: string;
+    account_type: string;
 }
 
 export class User extends GSPObject implements IUser {
@@ -15,7 +15,7 @@ export class User extends GSPObject implements IUser {
     nick: string;
     email: string;
     readonly password: string | null;
-    user_type: string;
+    account_type: string;
 
     constructor(partial: Partial<IUser>) {
         super(partial);
@@ -24,6 +24,6 @@ export class User extends GSPObject implements IUser {
         this.email = partial.email || "";
         this.nick = partial.nick || "";
         this.password = partial.password || null;
-        this.user_type = partial.user_type || "";
+        this.account_type = partial.account_type || "";
     }
 }

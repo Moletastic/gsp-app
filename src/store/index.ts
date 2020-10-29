@@ -5,11 +5,13 @@ import {
     Subject,
     Meet,
     IProject,
-    Milestone
+    Milestone,
+    LinkType
 } from "@/types/core/project";
 import { generateID } from "@/utils";
 import { Teacher } from "@/types/core/access/teacher";
 import { User } from "@/types/core/access/user";
+import { Rubric } from "@/types/core/project/rubric";
 
 Vue.use(Vuex);
 
@@ -19,7 +21,9 @@ export default new Vuex.Store({
         sidebar: false,
         user: {},
         selected_project: new Project({}),
-        projects: [] as Array<Project>
+        projects: [] as Array<Project>,
+        link_types: [] as LinkType[],
+        rubrics: [] as Rubric[]
     },
     mutations: {
         toggle_sidebar(state) {
@@ -36,6 +40,12 @@ export default new Vuex.Store({
         },
         set_user(state, user: User) {
             state.user = user;
+        },
+        set_link_types(state, types) {
+            state.link_types = types;
+        },
+        set_rubrics(state, rubrics) {
+            state.rubrics = rubrics;
         }
     },
     actions: {},

@@ -3,10 +3,9 @@ export function generateID(prefix: string) {
     return `${prefix}-${rand}`;
 }
 
-type LoggerType = "log" | "warn" | "error";
+type LoggerType = "log" | "table" | "warn" | "error" | "api";
 
 export function $debug(type: LoggerType, ...content: any | any[]) {
-    //const msg = [`%c `,...content, 'background: #689F38; color: #000000'];
     const msg = {
         color:
             "background: #3F51B5; color: #ffffff; font-weight: bold; font-size: 16px<"
@@ -16,6 +15,14 @@ export function $debug(type: LoggerType, ...content: any | any[]) {
         switch (type) {
             case "log":
                 console.log("%c 📔[DEBUG] ", msg.color, ...content);
+                break;
+            case "api":
+                msg.color =
+                    "background: #5e35b1; color: #ffffff; font-weight: bold; font-size:16px<";
+                console.log("%c ⚡️[API] ", msg.color, ...content);
+                break;
+            case "table":
+                console.table(...content);
                 break;
             case "error":
                 console.error(...content);

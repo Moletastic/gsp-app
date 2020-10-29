@@ -13,7 +13,6 @@
                     prepend-icon="mdi-account"
                     type="email"
                 ></v-text-field>
-
                 <v-text-field
                     v-model="form.password"
                     id="password"
@@ -26,7 +25,9 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="onSubmit" color="primary">Logearme</v-btn>
+            <v-btn :loading="loading" @click="onSubmit" color="primary"
+                >Logearme</v-btn
+            >
         </v-card-actions>
     </v-card>
 </template>

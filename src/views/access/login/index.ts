@@ -13,22 +13,28 @@ import { ILoginForm, ISignupForm } from "@/types/core/access";
 })
 export default class LoginView extends Vue {
     toggle_form = false;
+    loading = false;
 
-    async login(form: ILoginForm) {
+    async login(form: ILoginForm): Promise<void> {
+        this.loading = true;
         const { email, password } = form;
-        const data = await $api.login(email, password);
-        this.$store.commit("set_user", data.user);
-        localStorage.setItem("gsp:token", data.token);
-        this.signIn();
+        try {
+            const data = await $api.login(email, password);
+            this.$store.commit("set_user", data.user);
+            $debug("log", this.$store.state.user);
+            localStorage.setItem("gsp:token", data.token);
+            this.signIn();
+        } catch (err) {
+            $debug("error", err);
+        }
     }
 
-    async signUp(form: ISignupForm) {
-        $debug("log", form);
+    async signUp(form: ISignupForm): Promise<void> {
         const user = await $api.signUp(form);
         $debug("log", user);
     }
 
-    signIn() {
+    signIn(): void {
         this.$store.commit("signup");
         this.$router.push({ name: "Home" });
     }

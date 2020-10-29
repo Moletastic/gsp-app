@@ -45,11 +45,11 @@ export default class MeetTable extends CrudTableMixin<Meet> {
     entity = new Meet({});
     channels: Channel[] = [];
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         this.channels = await this.getChannels();
     }
 
@@ -57,7 +57,7 @@ export default class MeetTable extends CrudTableMixin<Meet> {
         return new Meet({});
     }
 
-    async getChannels() {
+    async getChannels(): Promise<Channel[]> {
         const data: Array<Channel> = await $api.get("channel");
         return data;
     }

@@ -2,7 +2,7 @@
     <v-layout wrap>
         <v-flex xs12 pb-5 v-if="!loading.active">
             <h1>
-                <v-avatar color="primary">
+                <v-avatar v-if="project.subjects[0]" color="primary">
                     <v-icon color="white">{{
                         project.subjects[0].icon
                     }}</v-icon>
@@ -31,7 +31,7 @@
                         label
                         @click="checkTeacher(guide.id)"
                         class="clickable primary mr-2"
-                        >{{ guide.user.nick }}</v-chip
+                        >{{ guide.account.nick }}</v-chip
                     >
                 </template>
             </h2>
@@ -49,7 +49,8 @@
         </v-flex>
         <v-flex xs12>
             <state-switch
-                @change="onChangeState"
+                v-if="project.project_state"
+                @change="$e => onChangeState($e)"
                 :state="project.project_state"
             ></state-switch>
         </v-flex>
@@ -61,6 +62,9 @@
                             <thead>
                                 <tr>
                                     <th class="text-left">Links</th>
+                                    <v-btn color="green" @click="addLink" small
+                                        ><v-icon small>mdi-plus</v-icon></v-btn
+                                    >
                                 </tr>
                             </thead>
                             <tbody>
@@ -75,6 +79,16 @@
                                         <a :href="link.url" target="_blank">{{
                                             link.url
                                         }}</a>
+                                    </td>
+                                    <td>
+                                        <v-btn
+                                            depressed
+                                            @click="removeLink(link)"
+                                            fab
+                                            x-small
+                                        >
+                                            <v-icon small>mdi-close</v-icon>
+                                        </v-btn>
                                     </td>
                                 </tr>
                             </tbody>
@@ -91,6 +105,12 @@
                             <thead>
                                 <tr>
                                     <th class="text-left">Evaluaciones</th>
+                                    <v-btn
+                                        color="green"
+                                        @click="addReview"
+                                        small
+                                        ><v-icon small>mdi-plus</v-icon></v-btn
+                                    >
                                 </tr>
                             </thead>
                             <tbody>
@@ -111,6 +131,16 @@
                                             >Ir a Evaluación</a
                                         >
                                     </td>
+                                    <td>
+                                        <v-btn
+                                            depressed
+                                            @click="removeReview(review)"
+                                            fab
+                                            x-small
+                                        >
+                                            <v-icon small>mdi-close</v-icon>
+                                        </v-btn>
+                                    </td>
                                 </tr>
                             </tbody>
                         </template>
@@ -130,6 +160,7 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <milestones-table
+                                        :project_id="project.id"
                                         :table="milestonesTable"
                                     ></milestones-table>
                                 </v-card-text>
@@ -137,6 +168,7 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <meet-table
+                                        :project_id="project.id"
                                         :table="meetsTable"
                                     ></meet-table>
                                 </v-card-text>
@@ -152,6 +184,7 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <progress-table
+                                        :project_id="project.id"
                                         :table="progressTable"
                                     ></progress-table>
                                 </v-card-text>
@@ -165,6 +198,7 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <milestones-table
+                                        :project_id="project.id"
                                         :table="milestonesTable"
                                     ></milestones-table>
                                 </v-card-text>
@@ -178,6 +212,7 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <meet-table
+                                        :project_id="project.id"
                                         :table="meetsTable"
                                     ></meet-table>
                                 </v-card-text>
@@ -205,6 +240,7 @@
                             <v-card class="mt-2" outlined>
                                 <v-card-text>
                                     <progress-table
+                                        :project_id="project.id"
                                         :table="progressTable"
                                     ></progress-table>
                                 </v-card-text>
@@ -217,6 +253,38 @@
         <v-flex xs4>
             <time-line :items="tlitems"></time-line>
         </v-flex>
+        <v-layout wrap justify-center>
+            <v-dialog v-model="link_modal" width="760px">
+                <v-card>
+                    <v-card-title>
+                        Agregando Enlace
+                    </v-card-title>
+                    <v-card-text>
+                        <v-layout wrap>
+                            <project-link-form
+                                @change="onLinkSubmit"
+                                :link="link_form"
+                            ></project-link-form>
+                        </v-layout>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="review_modal" width="760px">
+                <v-card>
+                    <v-card-title>
+                        Agregando Evaluación
+                    </v-card-title>
+                    <v-card-text>
+                        <v-layout wrap>
+                            <review-form
+                                @change="onReviewSubmit"
+                                :review="review_form"
+                            ></review-form>
+                        </v-layout>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+        </v-layout>
         <v-layout row justify-center>
             <v-dialog v-model="userDetails" :max-width="650">
                 <json-viewer

@@ -1,6 +1,5 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { $debug } from "@/utils";
-import { User } from "@/types/core/access/user";
 import { Career, Student } from "@/types/core/education";
 import { $api } from "@/api";
 
@@ -10,18 +9,16 @@ export default class StudentForm extends Vue {
 
     careers: Career[] = [];
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         this.careers = await this.getCareers();
     }
 
-    async getCareers() {
+    async getCareers(): Promise<Career[]> {
         const data: Array<Career> = await $api.get("careers");
         return data;
     }
-
-    generateNick() {}
 }

@@ -1,10 +1,13 @@
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import { $debug } from "@/utils";
-import { Project } from "@/types/core/project";
+import { Project, FmtProjectType } from "@/types/core/project";
 import { DataTable } from "@/types/vuetify";
 
 @Component
 export default class ProjectTable extends Vue {
+    fmt = {
+        project_type: FmtProjectType
+    };
     @Prop({
         default: () => {
             return new DataTable<Project>({
@@ -35,6 +38,9 @@ export default class ProjectTable extends Vue {
         }
     })
     table!: DataTable<Project>;
+
+    @Prop({ default: false })
+    loading!: boolean;
 
     check(item: Project) {
         if (item.id) {

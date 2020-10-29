@@ -1,8 +1,9 @@
 import axios, { AxiosAdapter, AxiosInstance, AxiosResponse } from "axios";
+import * as AxiosLogger from "axios-logger";
 import { $debug } from "@/utils";
-import { ISignupForm } from "@/types/core/access";
+import { ISignupForm, TokenPayload } from "@/types/core/access";
 import { IGSPObject } from "@/types/core/base";
-import { User } from "@/types/core/access/user";
+import { User, IUser } from "@/types/core/access/user";
 
 class TLAPI {
     client!: AxiosInstance;
@@ -46,7 +47,7 @@ class TLAPI {
         const req: AxiosResponse<{
             user: User;
             token: string;
-        }> = await this.client.post("users/login", {
+        }> = await this.client.post("access/login", {
             user: {
                 email,
                 password
@@ -56,10 +57,20 @@ class TLAPI {
         return req.data;
     }
 
+    async me(): Promise<TokenPayload> {
+        const res: AxiosResponse<TokenPayload> = await this.client.post(
+            "gsp/account/me"
+        );
+        return res.data;
+    }
+
     async signUp(form: ISignupForm) {
-        const req: AxiosResponse<User> = await this.client.post("users/", {
-            user: form
-        });
+        const req: AxiosResponse<User> = await this.client.post(
+            "users/signup",
+            {
+                user: form
+            }
+        );
         const user = req.data;
         return user;
     }
@@ -76,6 +87,16 @@ instance.interceptors.request.use(config => {
     config.headers["Authorization"] = token ? `Bearer ${token}` : "";
     return config;
 });
+AxiosLogger.setGlobalConfig({
+    data: false,
+    method: true,
+    url: true,
+    prefixText: "GSP API",
+    code: true,
+    status: true,
+    logger: text => $debug("api", text)
+});
+instance.interceptors.response.use(AxiosLogger.responseLogger);
 
 const $api = new TLAPI(instance);
 

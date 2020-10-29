@@ -33,4 +33,9 @@ export class GSPObject implements IGSPObject {
         this.uid = partial.uid || "";
         this.is_valid = partial.is_valid || true;
     }
+
+    clean(): GSPObject {
+        const obj = Object.assign({}, this);
+        return obj;
+    }
 }

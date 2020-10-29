@@ -88,29 +88,25 @@ export default class StateSwitch extends Vue {
     options: ProjectState[] = [];
 
     @Watch("state")
-    onChange() {
+    onChange(): void {
         this.refreshOptions();
     }
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         this.states = await this.getProjectStates();
-        $debug(
-            "log",
-            this.states.map(s => s.name)
-        );
         this.refreshOptions();
     }
 
-    async getProjectStates() {
+    async getProjectStates(): Promise<ProjectState[]> {
         const states = await $api.get<IProjectState>("pstate");
         return states.map(p => new ProjectState(p));
     }
 
-    refreshOptions() {
+    refreshOptions(): void {
         switch (this.state.name) {
             case "IN_PROGRESS":
                 this.options = this.changeOptions(["PRESENTED"]);
@@ -152,11 +148,11 @@ export default class StateSwitch extends Vue {
         return options;
     }
 
-    get state_names() {
+    get state_names(): string[] {
         return this.states.map(state => state.name);
     }
 
-    next(state: ProjectState) {
+    next(state: ProjectState): void {
         this.$emit("change", new ProjectState(state));
     }
 }

@@ -10,9 +10,11 @@ import {
     Commit,
     ProjectState,
     Progress,
-    IProjectState
+    IProjectState,
+    ProjectType,
+    FmtProjectType,
+    Link
 } from "@/types/core/project";
-import Axios, { AxiosResponse } from "axios";
 import { $api } from "@/api";
 import { DataTable, LoopBar, ITimeLineItem } from "@/types/vuetify";
 import JSONViewer from "@/components/utils/JsonViewer/index.vue";
@@ -24,6 +26,10 @@ import DateField from "@/components/fields/date/index.vue";
 import TimeField from "@/components/fields/time/index.vue";
 import ProgressTable from "@/components/tables/progress/index.vue";
 import StateSwitch from "@/components/state_switch/index.vue";
+import ProjectLinkForm from "@/components/form/project_link/index.vue";
+import { Review } from "@/types/core/project/rubric";
+import ReviewForm from "@/components/form/review/index.vue";
+import { TokenPayload } from "@/types/core/access";
 
 @Component({
     components: {
@@ -38,7 +44,9 @@ import StateSwitch from "@/components/state_switch/index.vue";
         ProgressTable,
         DateField,
         TimeField,
-        StateSwitch
+        StateSwitch,
+        ProjectLinkForm,
+        ReviewForm
     }
 })
 export default class ProjectView extends Vue {
@@ -144,24 +152,26 @@ export default class ProjectView extends Vue {
                 value: "_actions"
             }
         ],
-        rowsPerPageText: "Hitos por página"
+        rowsPerPageText: "Progresos por página"
     });
 
     tab = null;
 
-    mounted() {
+    link_modal = false;
+    link_form = new Link({});
+
+    review_modal = false;
+    review_form = new Review({});
+
+    mounted(): void {
         this.loading.load();
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         const id = this.$route.params["id"];
         const project = await this.getProject(id);
         this.project_states = await this.getProjectStates();
-        $debug(
-            "log",
-            this.project_states.map(p => p.formated)
-        );
         if (project) {
             this.project = project;
             this.milestonesTable.data = this.project.milestones;
@@ -170,11 +180,9 @@ export default class ProjectView extends Vue {
             this.progressTable.data = this.project.progress;
         }
         this.loading.unload();
-        $debug("log", project?.milestones);
     }
 
     async getProject(id: string): Promise<Project | null> {
-        $debug("log", "GetProject");
         const project = await $api.fetch<Project>("project", id);
         return new Project(project);
     }
@@ -247,28 +255,103 @@ export default class ProjectView extends Vue {
             .concat(this.tlprogress);
     }
 
-    checkAuthor(id: string) {
+    checkAuthor(id: string): void {
         this.selected_entity_id = id;
         this.userDetails = true;
     }
 
-    checkTeacher(id: string) {
+    addLink(): void {
+        this.link_modal = true;
+        this.link_form = new Link({});
+    }
+
+    addReview(): void {
+        this.review_form = new Review({});
+        this.review_modal = true;
+    }
+
+    async onLinkSubmit(link: Link): Promise<void> {
+        try {
+            link.id = null;
+            link.project_id = this.project.id as number;
+            link.link_type = null;
+            const res = await $api.create("link", link);
+            this.project.links.push(res);
+        } catch (err) {
+            $debug("error", err);
+        } finally {
+            this.link_modal = false;
+        }
+    }
+
+    async removeLink(link: Link): Promise<void> {
+        try {
+            const res = await $api.delete("link", link);
+            $debug("log", res);
+            const index = this.project.links.map(l => l.id).indexOf(link.id);
+            this.project.links.splice(index, 1);
+        } catch (err) {
+            $debug("error", err);
+        }
+    }
+
+    async onReviewSubmit(review: Review): Promise<void> {
+        try {
+            review.id = null;
+            review.project_id = this.project.id as number;
+            review.project = null;
+            if (this.$store.state.user) {
+                const user: TokenPayload["user"] = this.$store.state.user;
+                const user_type = user.account?.account_type;
+                if (user_type === "Teacher") {
+                    review.reviewer_id = user.account.id;
+                }
+            }
+            review.rubric = null;
+            const res = await $api.create("review", review);
+            this.project.reviews.push(res);
+        } catch (err) {
+            $debug("error", err);
+        } finally {
+            this.review_modal = false;
+        }
+    }
+
+    async removeReview(review: Review): Promise<void> {
+        try {
+            const res = await $api.delete("review", review);
+            $debug("log", res);
+            const index = this.project.reviews
+                .map(l => l.id)
+                .indexOf(review.id);
+            this.project.reviews.splice(index, 1);
+        } catch (err) {
+            $debug("error", err);
+        }
+    }
+
+    checkTeacher(id: string): void {
         $debug("log", id);
         this.selected_entity_id = id;
         this.teacherDetails = true;
     }
 
-    changeState(state: string) {
+    changeState(state: string): void {
         const index = this.project_states.map(p => p.name).indexOf(state);
         if (index !== -1) {
             const new_state = this.project_states[index];
-            $debug("log", new_state);
             this.project.project_state = new ProjectState(new_state);
-            $debug("log", this.project.project_state instanceof ProjectState);
         }
     }
 
-    onChangeState(state: ProjectState) {
+    async onChangeState(state: ProjectState): Promise<void> {
         this.project.project_state = new ProjectState(state);
+        this.project.project_state_id = this.project.project_state.id as number;
+        await this.save();
+    }
+
+    async save(): Promise<void> {
+        const res = await $api.update("project", this.project.getClean());
+        $debug("log", res);
     }
 }

@@ -9,11 +9,11 @@ interface TLObject {
 @Component
 export default class JSONViewer extends Vue {
     @Prop()
-    entity!: string;
+    readonly entity!: string;
     @Prop()
-    entity_id!: string;
+    readonly entity_id!: string;
     @Prop()
-    verbose!: string;
+    readonly verbose!: string;
 
     title = "";
     desc = "";
@@ -24,21 +24,21 @@ export default class JSONViewer extends Vue {
     };
 
     @Watch("entity_id")
-    onEntityChanged() {
+    onEntityChanged(): void {
         this.init();
     }
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         let name = this.entity_id;
         try {
             const obj: any = await $api.fetch(this.entity, this.entity_id);
             if (this.verbose === "user") {
                 name = obj.user.nick;
-            } else if (obj.hasOwnProperty(this.verbose)) {
+            } else if (`${this.verbose}` in obj) {
                 name = "" + obj[<keyof TLObject>this.verbose];
             }
             const fields = JSON.stringify(obj, undefined, 2);

@@ -31,6 +31,11 @@ export class Commit extends GSPObject implements ICommit {
         this.project_id = partial.project_id || null;
     }
 
+    clean(): Commit {
+        const commit = Object.assign({}, this);
+        return commit;
+    }
+
     solve() {
         this.solved_at = moment(new Date()).toISOString();
         this.solved = true;

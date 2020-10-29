@@ -12,8 +12,8 @@ export default class TimeLineForm extends Vue {
     addToday!: boolean;
 
     @Watch("items")
-    onChange() {
-        $debug("log", this.items);
+    onChange(): void {
+        $debug("table", this.items);
     }
 
     current: Omit<ITimeLineItem, "date"> & { date: Moment } = {

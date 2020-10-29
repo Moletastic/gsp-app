@@ -10,7 +10,7 @@ export default class SignupForm extends Vue {
         nick: "",
         email: "",
         password: "",
-        user_type: ""
+        account_type: ""
     };
 
     user_types = ["Teacher", "Admin"];
