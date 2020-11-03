@@ -1,5 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug, generateID } from "@/utils";
+import { Component, Vue } from "vue-property-decorator";
 import { Project, ProjectState, ProjectType } from "@/types/core/project";
 import { Teacher } from "@/types/core/access/teacher";
 import ProjectTable from "@/components/tables/projects/index.vue";
@@ -7,6 +6,7 @@ import ProjectForm from "@/components/form/project/index.vue";
 import { $api } from "@/api";
 
 import { DataTable } from "@/types/vuetify";
+import { projectModule } from "@/store";
 
 @Component({
     components: {
@@ -81,8 +81,8 @@ export default class ProjectsView extends Vue {
     }
 
     applyFilter(): void {
-        let filteredProjects: Project[] = this.$store.state.projects;
-        const { name, state, teacher, year, project_type } = this.filters;
+        let filteredProjects: Project[] = projectModule.projects;
+        const { name, teacher, project_type } = this.filters;
         if (name && name !== "") {
             filteredProjects = filteredProjects.filter(project =>
                 project.title.toLowerCase().includes(name)
@@ -102,7 +102,7 @@ export default class ProjectsView extends Vue {
     }
 
     clearFilter(): void {
-        this.projects = this.$store.state.projects;
+        this.projects = projectModule.projects;
         this.filters = {
             name: undefined,
             state: undefined,

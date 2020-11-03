@@ -1,5 +1,4 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils/";
+import { Vue, Component, Prop} from "vue-property-decorator";
 import { Progress } from "@/types/core/project";
 import { Mode } from "@/types/vuetify";
 

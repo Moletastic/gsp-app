@@ -1,14 +1,14 @@
-import { IUser, User } from "./user";
+import { IAccount} from "./user";
 import { IGSPObject, GSPObject } from "../base";
 
 export interface ITeacher extends IGSPObject {
-    account: IUser | null;
+    account: IAccount | null;
     account_id: number;
     entry_year: number;
 }
 
 export class Teacher extends GSPObject implements ITeacher {
-    account: IUser | null;
+    account: IAccount | null;
     account_id: number;
     entry_year: number;
 

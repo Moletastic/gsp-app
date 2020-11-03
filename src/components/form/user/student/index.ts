@@ -1,24 +1,30 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Vue } from "vue-property-decorator";
 import { Career, Student } from "@/types/core/education";
 import { $api } from "@/api";
+import {projectModule} from '@/store';
 
 @Component
 export default class StudentForm extends Vue {
     form = new Student({});
-
-    careers: Career[] = [];
 
     mounted(): void {
         this.init();
     }
 
     async init(): Promise<void> {
-        this.careers = await this.getCareers();
+        if(this.careers.length === 0){
+            const careers = await this.getCareers();
+            projectModule.setCareers(careers);
+        }
     }
 
-    async getCareers(): Promise<Career[]> {
-        const data: Array<Career> = await $api.get("careers");
-        return data;
+    get careers() : Career[]{
+        return projectModule.careers;
     }
+
+    async getCareers() : Promise<Career[]> {
+        const res = await $api.get<Career>("careers");
+        return res
+    }
+
 }

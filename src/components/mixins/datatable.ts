@@ -1,8 +1,4 @@
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { $debug } from "@/utils"
+import { Vue, Component } from "vue-property-decorator";
 
 @Component
-export default class CrudTable extends Vue {
-
-}
-
+export default class CrudTable extends Vue {}

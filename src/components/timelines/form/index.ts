@@ -3,6 +3,10 @@ import { $debug } from "@/utils";
 import { ITimeLineItem } from "@/types/vuetify";
 import moment, { Moment } from "moment";
 
+export interface MTimeLine extends Omit<ITimeLineItem, "date"> {
+    date: Moment;
+}
+
 @Component
 export default class TimeLineForm extends Vue {
     @Prop({ default: () => [] })
@@ -16,7 +20,7 @@ export default class TimeLineForm extends Vue {
         $debug("table", this.items);
     }
 
-    current: Omit<ITimeLineItem, "date"> & { date: Moment } = {
+    current: MTimeLine = {
         date: moment(new Date()),
         icon: "",
         color: "blue",
@@ -25,7 +29,7 @@ export default class TimeLineForm extends Vue {
 
     moment = moment;
 
-    get dated_items() {
+    get dated_items(): MTimeLine[] {
         if (this.addToday) {
             return this.items
                 .map(it => {
@@ -38,7 +42,7 @@ export default class TimeLineForm extends Vue {
         });
     }
 
-    get orderedItems() {
+    get orderedItems(): MTimeLine[] {
         return this.dated_items.sort(
             (a, b) => b.date.valueOf() - a.date.valueOf()
         );

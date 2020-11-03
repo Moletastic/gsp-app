@@ -1,4 +1,4 @@
-import { Component, Vue, Watch, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop } from "vue-property-decorator";
 import { $debug } from "@/utils";
 import { DataTable, Mode } from "@/types/vuetify";
 import CommitForm from "@/components/form/commit/index.vue";

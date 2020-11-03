@@ -1,5 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug, generateID } from "@/utils";
+import { Component, Vue, Emit } from "vue-property-decorator";
 import {
     Project,
     Subject,
@@ -14,8 +13,9 @@ import StudentForm from "@/components/form/user/student/index.vue";
 import TeacherForm from "@/components/form/user/teacher/index.vue";
 import { Teacher } from "@/types/core/access/teacher";
 import { $api } from "@/api";
-import { Student } from "@/types/core/education";
 import { Moment } from "moment";
+import { Student } from "@/types/core/education";
+import { ITimeLineItem } from "@/types/vuetify";
 
 @Component({
     components: { LinkForm, DateField, TimeLine, StudentForm, TeacherForm }
@@ -38,11 +38,11 @@ export default class ProjectForm extends Vue {
         this.form.subjects = [this.subjects[0]];
     }
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         type ProjectDep = [
             Array<Subject>,
             Array<Student>,
@@ -63,13 +63,13 @@ export default class ProjectForm extends Vue {
         this.initForm();
     }
 
-    onSubmit() {
+    @Emit("submit")
+    onSubmit(): Project {
         this.form.tags = this.tags;
-        this.$emit("submit", this.form.getClean());
-        //$api.create("projects", this.form.getClean());
+        return this.form.clean();
     }
 
-    enterTag() {
+    enterTag(): void {
         const tag = this.tag;
         const exists = this.tags.includes(tag);
         if (!exists) {
@@ -78,12 +78,12 @@ export default class ProjectForm extends Vue {
         this.tag = "";
     }
 
-    removeTag(tag: string) {
+    removeTag(tag: string): void {
         const index = this.tags.indexOf(tag);
         this.$delete(this.tags, index);
     }
 
-    addEmptyLink() {
+    addEmptyLink(): void {
         this.form.links.push(
             new Link({
                 link_type: this.linktypes[0],
@@ -92,11 +92,11 @@ export default class ProjectForm extends Vue {
         );
     }
 
-    addEmptyMilestone() {
+    addEmptyMilestone(): void {
         this.form.milestones.push(new Milestone({ title: "Avance #" }));
     }
 
-    removeMilestone(id: number) {
+    removeMilestone(id: number): void {
         const index = this.form.milestones.findIndex(
             milestone => milestone.id === id
         );
@@ -105,12 +105,12 @@ export default class ProjectForm extends Vue {
         }
     }
 
-    onChangeDateMilestone(date: Moment, id: number) {
+    onChangeDateMilestone(date: Moment, id: number): void {
         const index = this.form.milestones.findIndex(mil => mil.id === id);
         this.form.milestones[index].date = date.toISOString();
     }
 
-    get disabled() {
+    get disabled(): boolean {
         return this.form.title === "" || !this.form.title;
     }
 
@@ -119,11 +119,13 @@ export default class ProjectForm extends Vue {
         return res;
     }
 
-    get timelineItems() {
+    get timelineItems(): ITimeLineItem[] {
         return this.form.milestones.map(milestone => {
             return {
                 title: milestone.title,
-                date: milestone.date
+                date: milestone.date,
+                icon: "mdi-calendar",
+                color: "teal"
             };
         });
     }

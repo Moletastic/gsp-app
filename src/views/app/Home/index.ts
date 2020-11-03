@@ -1,5 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Vue } from "vue-property-decorator";
 import BarChart from "@/components/chart/bar/index.vue";
 import PieChart from "@/components/chart/pie/index.vue";
 import SpineChart from "@/components/chart/spine/index.vue";

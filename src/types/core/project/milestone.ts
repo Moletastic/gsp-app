@@ -1,6 +1,3 @@
-import { generateID, $debug } from "@/utils";
-import { Moment } from "moment";
-import moment from "moment";
 import { IGSPObject, GSPObject } from "../base";
 
 export interface IMilestone extends IGSPObject {
@@ -12,7 +9,6 @@ export interface IMilestone extends IGSPObject {
     project_id: number;
 }
 
-// Hito
 export class Milestone extends GSPObject implements IMilestone {
     title: string;
     desc: string;
@@ -31,13 +27,8 @@ export class Milestone extends GSPObject implements IMilestone {
         this.project_id = partial.project_id || 0;
     }
 
-    solve() {
+    solve(): void {
         this.solved = true;
-    }
-
-    getClean() {
-        const { id, title, desc, file_url, solved, date } = this;
-        return { id, title, desc, file_url, solved, date };
     }
 
     clean(): Milestone {

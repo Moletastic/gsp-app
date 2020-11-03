@@ -1,5 +1,3 @@
-import { Moment } from "moment";
-
 export interface DataTableHeader<T> {
     text: string;
     align?: "left" | "center" | "right";
@@ -62,14 +60,14 @@ export class LoopBar implements ILoopBar {
         this.color = "primary";
     }
 
-    load(message?: string, color?: string) {
+    load(message?: string, color?: string): void {
         this.message = message ? message : "Cargando...";
         this.color = color ? color : this.color;
         this.active = true;
         this.show = true;
     }
 
-    unload() {
+    unload(): void {
         this.show = false;
         this.active = false;
         this.message = "";

@@ -1,5 +1,4 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils/";
+import { Vue, Component, Emit } from "vue-property-decorator";
 import { ISignupForm } from "@/types/core/access";
 
 @Component
@@ -10,12 +9,14 @@ export default class SignupForm extends Vue {
         nick: "",
         email: "",
         password: "",
-        account_type: ""
+        account_type: "",
+        rut: ""
     };
 
     user_types = ["Teacher", "Admin"];
 
-    onSubmit() {
-        this.$emit("submit", this.form);
+    @Emit("submit")
+    onSubmit(): ISignupForm {
+        return this.form;
     }
 }

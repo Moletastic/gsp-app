@@ -1,7 +1,5 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils/";
+import { Vue, Component, Prop, Emit } from "vue-property-decorator";
 import { ILoginForm } from "@/types/core/access";
-
 @Component
 export default class LoginForm extends Vue {
     @Prop({ default: false })
@@ -12,7 +10,8 @@ export default class LoginForm extends Vue {
         password: ""
     };
 
-    onSubmit() {
-        this.$emit("submit", this.form);
+    @Emit("submit")
+    onSubmit(): ILoginForm {
+        return this.form;
     }
 }

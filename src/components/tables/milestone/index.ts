@@ -1,5 +1,4 @@
-import { Component, Vue, Watch, Prop, Mixins } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Prop } from "vue-property-decorator";
 import { DataTable } from "@/types/vuetify";
 import { Milestone } from "@/types/core/project";
 import MilestoneForm from "@/components/form/milestone/index.vue";

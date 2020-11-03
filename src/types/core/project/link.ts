@@ -1,12 +1,4 @@
-import { generateID } from "@/utils";
 import { GSPObject, IGSPObject } from "../base";
-
-/* export enum LinkType {
-    COMMON = "Normal",
-    DRIVE = "Google Drive",
-    ONEDRIVE = "OneDrive",
-    GIT_REPO = "Repositorio Git"
-} */
 
 export interface ILinkType extends IGSPObject {
     name: string;

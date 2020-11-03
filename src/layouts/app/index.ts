@@ -1,5 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Vue } from "vue-property-decorator";
 import SideBar from "@/components/partials/SideBar/index.vue";
 
 @Component({
@@ -9,7 +8,7 @@ import SideBar from "@/components/partials/SideBar/index.vue";
 })
 export default class AppLayout extends Vue {
     logo = require("@/assets/timeline.png");
-    toggle() {
-        this.$store.commit("toggle_sidebar");
+    toggle(): void {
+        this.$store.dispatch("toggle_sidebar");
     }
 }

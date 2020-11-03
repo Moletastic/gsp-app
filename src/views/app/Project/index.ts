@@ -1,4 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue} from "vue-property-decorator";
 import { $debug } from "@/utils";
 import TimeLine from "@/components/timelines/form/index.vue";
 import MilestoneForm from "@/components/form/milestone/index.vue";
@@ -11,8 +11,6 @@ import {
     ProjectState,
     Progress,
     IProjectState,
-    ProjectType,
-    FmtProjectType,
     Link
 } from "@/types/core/project";
 import { $api } from "@/api";
@@ -30,6 +28,7 @@ import ProjectLinkForm from "@/components/form/project_link/index.vue";
 import { Review } from "@/types/core/project/rubric";
 import ReviewForm from "@/components/form/review/index.vue";
 import { TokenPayload } from "@/types/core/access";
+import { userModule } from "@/store";
 
 @Component({
     components: {
@@ -300,8 +299,8 @@ export default class ProjectView extends Vue {
             review.id = null;
             review.project_id = this.project.id as number;
             review.project = null;
-            if (this.$store.state.user) {
-                const user: TokenPayload["user"] = this.$store.state.user;
+            if (userModule.user) {
+                const user: TokenPayload["user"] = userModule.user;
                 const user_type = user.account?.account_type;
                 if (user_type === "Teacher") {
                     review.reviewer_id = user.account.id;

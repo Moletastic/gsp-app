@@ -1,9 +1,8 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
+import { Vue, Component, Prop} from "vue-property-decorator";
 import { $debug } from "@/utils";
 import { DataTable, Mode } from "@/types/vuetify";
-import { GSPObject, IGSPObject } from "@/types/core/base";
+import { GSPObject} from "@/types/core/base";
 import { CRUDService } from "@/api/crud-service";
-import { Milestone, Meet } from "@/types/core/project";
 
 class CustomGSPObject extends GSPObject {
     project_id!: number;

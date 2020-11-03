@@ -1,5 +1,4 @@
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
-import { $debug } from '@/utils'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import { ILoopBar } from '@/types/vuetify'
 
 @Component

@@ -1,4 +1,4 @@
-import { IUser } from "./user";
+import { IAccount, User } from "./user";
 
 export interface ILoginForm {
     email: string;
@@ -6,7 +6,7 @@ export interface ILoginForm {
 }
 
 export type ISignupForm = Omit<
-    IUser,
+    IAccount,
     | "id"
     | "entity"
     | "uid"
@@ -17,11 +17,7 @@ export type ISignupForm = Omit<
 >;
 
 export interface TokenPayload {
-    exp: number
-    is_admin: boolean
-    user: {
-        account: IUser,
-        account_id: number,
-        id: number | null
-    }
+    exp: number;
+    is_admin: boolean;
+    user: User;
 }

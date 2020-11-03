@@ -1,6 +1,6 @@
-import { Component, Vue, Watch, Prop, Model } from "vue-property-decorator";
+import { Component, Vue, Watch, Prop } from "vue-property-decorator";
 import { $debug } from "@/utils";
-import moment, { Moment } from "moment";
+import moment from "moment";
 
 @Component
 export default class DateField extends Vue {
@@ -23,7 +23,7 @@ export default class DateField extends Vue {
     current = moment(new Date());
 
     @Watch("date")
-    onChange() {
+    onChange(): void {
         this.date_str = moment(this.cdate)
             .format("DD/MM/YYYY")
             .substr(0, 10);
@@ -31,18 +31,18 @@ export default class DateField extends Vue {
     }
 
     @Watch("date_str")
-    onChangeDateStr(date_str: string) {
+    onChangeDateStr(date_str: string): void {
         $debug("log", date_str);
     }
 
-    mounted() {
+    mounted(): void {
         this.date_str = moment(this.cdate)
             .format("DD/MM/YYYY")
             .substr(0, 10);
         this.picker = this.cdate.substr(0, 10);
     }
 
-    allowedDates(val: string) {
+    allowedDates(val: string): boolean {
         return this.current.valueOf() < moment(val).valueOf();
     }
 

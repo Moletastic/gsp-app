@@ -1,5 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Vue } from "vue-property-decorator";
 
 interface SideLink {
     title: string;
@@ -37,18 +36,14 @@ export default class SideBar extends Vue {
         }
     ];
 
-    goTo(link: string) {
+    goTo(link: string): void {
         if (link === "login") {
             localStorage.removeItem("gsp:token");
         }
         this.$router.push({ name: link });
     }
 
-    get active() {
+    get active(): boolean {
         return this.$store.state.sidebar;
-    }
-
-    set active(state) {
-        this.$store.dispatch("toggle_sidebar");
     }
 }

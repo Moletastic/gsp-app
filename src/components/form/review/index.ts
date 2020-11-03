@@ -1,7 +1,7 @@
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils/";
 import { $api } from "@/api";
 import { Review, IRubric, Rubric } from "@/types/core/project/rubric";
+import { projectModule } from "@/store";
 
 @Component
 export default class ReviewForm extends Vue {
@@ -22,10 +22,7 @@ export default class ReviewForm extends Vue {
     async init(): Promise<void> {
         if (!this.rubrics || this.rubrics.length === 0) {
             const rubrics: IRubric[] = await $api.get("rubric");
-            this.$store.commit(
-                "set_rubrics",
-                rubrics.map(r => new Rubric(r))
-            );
+            projectModule.setRubrics(rubrics);
         }
     }
 
@@ -39,6 +36,6 @@ export default class ReviewForm extends Vue {
     }
 
     get rubrics(): Rubric[] {
-        return this.$store.state.rubrics as Rubric[];
+        return projectModule.rubrics;
     }
 }

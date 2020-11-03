@@ -1,6 +1,4 @@
-import { Moment } from "moment";
 import moment from "moment";
-import { generateID } from "@/utils";
 import { IGSPObject, GSPObject } from "../base";
 
 export interface ICommit extends IGSPObject {
@@ -36,12 +34,12 @@ export class Commit extends GSPObject implements ICommit {
         return commit;
     }
 
-    solve() {
+    solve(): void {
         this.solved_at = moment(new Date()).toISOString();
         this.solved = true;
     }
 
-    unsolve() {
+    unsolve() : void{
         this.solved = false;
     }
 }

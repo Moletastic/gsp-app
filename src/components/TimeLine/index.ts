@@ -1,5 +1,5 @@
-import { Component, Vue, Watch } from 'vue-property-decorator'
-import { $debug } from '@/utils'
+import { Component, Vue } from "vue-property-decorator";
+import { $debug } from "@/utils";
 
 enum EventType {
     commit = "commit",
@@ -7,25 +7,18 @@ enum EventType {
     milestone = "milestone"
 }
 
-enum EventIcon {
-    commit = "mdi-note",
-    meet = "mdi-calendar",
-    milestone = "mdi-package-variant-closed"
-}
-
 interface ProjectEvent {
-    title: string
-    type: EventType
+    title: string;
+    type: EventType;
 }
 
 @Component
 export default class TimeLine extends Vue {
-
     icons = {
         commit: "mdi-tooltip-text",
         meet: "mdi-calendar",
         milestone: "mdi-package-variant-closed"
-    }
+    };
 
     events: ProjectEvent[] = [
         {
@@ -47,11 +40,11 @@ export default class TimeLine extends Vue {
         {
             title: "Reunion #1",
             type: EventType.meet
-        },
-    ]
+        }
+    ];
 
-    mounted() {
-        $debug('log', this.icons);
-        $debug('log', this.events);
+    mounted(): void {
+        $debug("log", this.icons);
+        $debug("log", this.events);
     }
 }

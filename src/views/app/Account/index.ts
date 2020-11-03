@@ -1,11 +1,12 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
+import { Vue, Component } from "vue-property-decorator";
 import { $debug } from "@/utils/";
-import { User } from "@/types/core/access/user";
+import { Account } from "@/types/core/access/user";
 import { $api } from "@/api";
+import { userModule } from "@/store";
 
 @Component
 export default class AccountView extends Vue {
-    user: User = new User({});
+    user: Account = new Account({});
 
     old_password = "";
     new_password = "";
@@ -13,22 +14,23 @@ export default class AccountView extends Vue {
 
     modal = false;
 
-    openModal() {
+    openModal(): void {
         this.modal = true;
     }
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         try {
-            const {user} = await $api.me();
-            const account = new User(user.account)
-            this.$store.state.user = account;
+            const { user } = await $api.me();
+            const account = new Account(user.account);
+            user.account = account;
+            userModule.setUser(user);
             this.user = account;
-        }catch(err){
-            $debug("error", err)
+        } catch (err) {
+            $debug("error", err);
         }
     }
 }

@@ -1,8 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
-import { User } from "@/types/core/access/user";
-import { Career } from "@/types/core/education";
-import { $api } from "@/api";
+import { Component, Vue} from "vue-property-decorator";
 import { Teacher } from "@/types/core/access/teacher";
 
 @Component({

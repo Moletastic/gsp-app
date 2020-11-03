@@ -1,5 +1,5 @@
-import { Component, Vue, Watch, Prop } from "vue-property-decorator";
-import { generateID, $debug } from "@/utils";
+import { Component, Vue, Prop } from "vue-property-decorator";
+import { generateID } from "@/utils";
 import { Meet, Channel } from "@/types/core/project";
 import DateField from "@/components/fields/date/index.vue";
 import { Mode } from "@/types/vuetify";

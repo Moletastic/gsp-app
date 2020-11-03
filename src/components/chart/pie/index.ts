@@ -2,7 +2,6 @@ import { Component, Vue, Watch, Prop } from "vue-property-decorator";
 import { $debug } from "@/utils";
 import { ApexOptions } from "apexcharts";
 import VueApexCharts from "vue-apexcharts";
-import { colors } from "vuetify/lib";
 
 @Component({
     components: {
@@ -27,7 +26,7 @@ export default class PieChart extends Vue {
     colors!: string[];
 
     @Watch("labels")
-    onLabelsChanged() {
+    onLabelsChanged(): void {
         if (this.chartOptions.xaxis) {
             $debug("log", this.labels);
             this.chartOptions.xaxis.categories = this.labels;
@@ -35,7 +34,7 @@ export default class PieChart extends Vue {
     }
 
     @Watch("colors")
-    onColorsChanged() {
+    onColorsChanged(): void {
         this.chartOptions.colors = this.colors;
     }
 

@@ -1,5 +1,4 @@
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Vue } from "vue-property-decorator";
 import MainLayout from "@/layouts/app/index.vue";
 import AccessLayout from "@/layouts/access/index.vue";
 import { VueConstructor } from "vue";

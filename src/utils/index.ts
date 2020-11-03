@@ -1,11 +1,11 @@
-export function generateID(prefix: string) {
+export function generateID(prefix: string): string {
     const rand = Math.floor(Math.random() * 9999 + 1000);
     return `${prefix}-${rand}`;
 }
 
 type LoggerType = "log" | "table" | "warn" | "error" | "api";
 
-export function $debug(type: LoggerType, ...content: any | any[]) {
+export function $debug(type: LoggerType, ...content: any | any[]): void {
     const msg = {
         color:
             "background: #3F51B5; color: #ffffff; font-weight: bold; font-size: 16px<"

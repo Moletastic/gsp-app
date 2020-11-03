@@ -1,7 +1,7 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils/";
+import { Vue, Component, Prop, Watch, Emit } from "vue-property-decorator";
 import { Link, LinkType } from "@/types/core/project";
 import { $api } from "@/api";
+import { projectModule } from "@/store";
 
 @Component
 export default class ProjectLinkForm extends Vue {
@@ -11,31 +11,32 @@ export default class ProjectLinkForm extends Vue {
     form: Link = new Link({});
 
     @Watch("link")
-    onChange(link: Link) {
+    onChange(link: Link): void {
         this.form = link;
     }
 
-    mounted() {
+    mounted(): void {
         this.init();
     }
 
-    async init() {
+    async init(): Promise<void> {
         if (!this.link_types || this.link_types.length === 0) {
             const types: LinkType[] = await $api.get("linktype");
-            this.$store.commit("set_link_types", types);
+            projectModule.setLinkTypes(types);
         }
     }
 
-    onSelectType(obj: LinkType) {
+    onSelectType(obj: LinkType): void {
         this.form.link_type = new LinkType(obj);
         this.form.link_type_id = obj.id;
     }
 
-    onSubmit() {
-        this.$emit("change", this.form);
+    @Emit("change")
+    onSubmit(): Link {
+        return this.form;
     }
 
     get link_types(): LinkType[] {
-        return this.$store.state.link_types as LinkType[];
+        return projectModule.link_types;
     }
 }

@@ -1,5 +1,4 @@
-import { Prop, Component, Vue, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Prop, Component, Vue } from "vue-property-decorator";
 import DateField from "@/components/fields/date/index.vue";
 import { Commit } from "@/types/core/project";
 import { Mode } from "@/types/vuetify";

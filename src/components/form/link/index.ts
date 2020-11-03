@@ -1,5 +1,4 @@
-import { Component, Vue, Watch, Prop } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Vue, Prop } from "vue-property-decorator";
 import { Link, LinkType } from "@/types/core/project";
 
 @Component
@@ -13,7 +12,7 @@ export default class LinkForm extends Vue {
     @Prop({ default: 0 })
     project_id!: number;
 
-    onSelect(obj: LinkType) {
+    onSelect(obj: LinkType): void {
         this.form.link_type = obj;
         this.form.link_type_id = obj.id;
     }

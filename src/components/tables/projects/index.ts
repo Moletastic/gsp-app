@@ -1,5 +1,4 @@
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Vue, Component, Prop } from "vue-property-decorator";
 import { Project, FmtProjectType } from "@/types/core/project";
 import { DataTable } from "@/types/vuetify";
 
@@ -42,7 +41,7 @@ export default class ProjectTable extends Vue {
     @Prop({ default: false })
     loading!: boolean;
 
-    check(item: Project) {
+    check(item: Project): void {
         if (item.id) {
             this.$router.push({
                 name: "project",

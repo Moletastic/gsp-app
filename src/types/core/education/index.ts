@@ -47,7 +47,7 @@ export class Student extends GSPObject implements IStudent {
         this.projects = partial.projects || [];
     }
 
-    get full_name() {
+    get full_name() : string{
         return `${this.first_name} ${this.last_name}`;
     }
 }

@@ -1,9 +1,9 @@
-import axios, { AxiosAdapter, AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import * as AxiosLogger from "axios-logger";
 import { $debug } from "@/utils";
 import { ISignupForm, TokenPayload } from "@/types/core/access";
 import { IGSPObject } from "@/types/core/base";
-import { User, IUser } from "@/types/core/access/user";
+import { Account, User } from "@/types/core/access/user";
 
 class TLAPI {
     client!: AxiosInstance;
@@ -65,7 +65,7 @@ class TLAPI {
     }
 
     async signUp(form: ISignupForm) {
-        const req: AxiosResponse<User> = await this.client.post(
+        const req: AxiosResponse<Account> = await this.client.post(
             "users/signup",
             {
                 user: form
@@ -76,11 +76,13 @@ class TLAPI {
     }
 }
 
-const local_url = "http://localhost:1323";
-const server_url = "http://18.212.41.142";
+const url = {
+    local: "http://localhost:1323",
+    remote: "http://18.212.41.142"
+};
 
 const instance = axios.create({
-    baseURL: `${local_url}/api/`
+    baseURL: `${url.local}/api/`
 });
 instance.interceptors.request.use(config => {
     const token = localStorage.getItem("gsp:token");

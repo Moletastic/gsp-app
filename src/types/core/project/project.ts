@@ -1,11 +1,10 @@
 import { ILink, Link } from "./link";
 
-import { IProgress, Progress } from "./progress";
-import { ITag } from "./tag";
-import { IMilestone, Milestone } from "./milestone";
+import { Progress } from "./progress";
+import { Milestone } from "./milestone";
 import { IMeet, Meet } from "./meet";
 import { ITeacher, Teacher } from "../access/teacher";
-import { generateID, $debug, make_enum } from "@/utils";
+import { make_enum } from "@/utils";
 import { Commit } from "./commit";
 import { IStudent, Student } from "../education";
 import { IReview, Review } from "./rubric";
