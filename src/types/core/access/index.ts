@@ -21,3 +21,13 @@ export interface TokenPayload {
     is_admin: boolean;
     user: User;
 }
+
+export interface PasswordForm {
+    current_pass: string;
+    new_pass: string;
+}
+
+export interface UserUpdateResponse {
+    user: User;
+    token: string;
+}

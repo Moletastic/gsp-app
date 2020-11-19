@@ -5,6 +5,7 @@ import {
     FmtProjectState
 } from "@/types/core/project";
 import { $api } from "@/api";
+import { $debug } from "@/utils";
 
 type PState = keyof typeof FmtProjectState;
 
@@ -79,6 +80,9 @@ export default class StateSwitch extends Vue {
     @Prop()
     state!: ProjectState;
 
+    @Prop({ default: false })
+    loading!: boolean;
+
     desc_state = DescState;
     colors = colorState;
 
@@ -107,6 +111,12 @@ export default class StateSwitch extends Vue {
 
     refreshOptions(): void {
         switch (this.state.name) {
+            case "CREATED":
+                this.options = this.changeOptions(["STARTED"]);
+                break;
+            case "STARTED":
+                this.options = this.changeOptions(["IN_PROGRESS"]);
+                break;
             case "IN_PROGRESS":
                 this.options = this.changeOptions(["PRESENTED"]);
                 break;
@@ -152,6 +162,7 @@ export default class StateSwitch extends Vue {
     }
 
     next(state: ProjectState): void {
+        $debug("log", state);
         this.$emit("change", new ProjectState(state));
     }
 }

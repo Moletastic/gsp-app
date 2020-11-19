@@ -35,8 +35,9 @@ export interface IReview extends IGSPObject {
     project: IProject | null;
     reviewer_id: number | null;
     reviewer: ITeacher | null;
-    score: string;
+    score: number;
     file_url: string;
+    comment: string;
 }
 
 export class Review extends GSPObject implements IReview {
@@ -47,8 +48,9 @@ export class Review extends GSPObject implements IReview {
     project: IProject | null;
     reviewer_id: number | null;
     reviewer: ITeacher | null;
-    score: string;
+    score: number;
     file_url: string;
+    comment: string;
 
     constructor(partial: Partial<IReview>) {
         super(partial);
@@ -59,8 +61,9 @@ export class Review extends GSPObject implements IReview {
         this.project = partial.project || null;
         this.reviewer_id = partial.reviewer_id || 0;
         this.reviewer = partial.reviewer || null;
-        this.score = partial.score || "";
+        this.score = partial.score || 0;
         this.file_url = partial.file_url || "";
+        this.comment = partial.comment || "";
     }
 
     clean(): Review {

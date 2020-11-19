@@ -1,7 +1,7 @@
 <template>
     <v-layout wrap>
         <v-flex xs12 class="d-flex flex-row-reverse">
-            <v-btn @click="add" small outlined color="green" right
+            <v-btn @click="add" small outlined color="success" right
                 >Agregar<v-icon small right>mdi-plus</v-icon></v-btn
             >
         </v-flex>
@@ -13,22 +13,20 @@
                     itemsPerPageText: table.rowsPerPageText
                 }"
             >
-                <template v-slot:item.solved="{ item }">
-                    <v-icon
-                        :color="item.solved ? 'green' : 'grey'"
-                        v-text="
-                            item.solved ? 'mdi-check-bold' : 'mdi-power-sleep'
-                        "
-                    ></v-icon>
+                <template #item.solved="{ item }">
+                    <v-icon v-if="item.solved" color="success"
+                        >mdi-check-bold</v-icon
+                    >
+                    <v-icon v-else color="grey">mdi-power-sleep</v-icon>
                 </template>
-                <template v-slot:item.limit_date="{ item }">
-                    <v-chip>{{ item.limit_date | datetime }}</v-chip>
+                <template v-slot:[`item.limit_date`]="{ item }">
+                    <v-chip>{{ item.limit_date | date }}</v-chip>
                 </template>
-                <template v-slot:item._actions="{ item }">
+                <template v-slot:[`item._actions`]="{ item }">
                     <v-btn
                         @click="checkDetails(item)"
                         outlined
-                        color="indigo"
+                        color="primary"
                         small
                         >revisar</v-btn
                     >
@@ -39,7 +37,7 @@
             <v-dialog v-model="modal" width="720px">
                 <v-card outlined>
                     <v-card-title>
-                        Acuerdo: {{ commit.title }}
+                        Acuerdo: {{ entity.title }}
                         <v-btn
                             v-if="modal_mode === 'CHECK'"
                             @click="edit"
@@ -57,19 +55,22 @@
                     </v-card-title>
                     <v-card-text>
                         <commit-form
-                            :form="commit"
+                            ref="form"
+                            :project_id="project_id"
+                            :form="entity"
                             :mode="modal_mode"
+                            @submit="save"
                         ></commit-form>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn
-                            @click="create"
+                            @click="submitForm"
                             v-if="modal_mode === 'ADD'"
                             color="primary"
                             >Crear</v-btn
                         >
                         <v-btn
-                            @click="update"
+                            @click="submitForm"
                             v-if="modal_mode === 'EDIT'"
                             color="primary"
                             >Guardar</v-btn

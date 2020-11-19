@@ -1,4 +1,5 @@
 import { IGSPObject, GSPObject } from "../base";
+import {INVALID_DATE} from '@/utils/const';
 
 export interface IChannel extends IGSPObject {
     name: string;
@@ -55,6 +56,9 @@ export class Meet extends GSPObject implements IMeet {
         const meet = new Meet(Object.assign({}, this));
         meet.channel_id = channel_id;
         meet.channel = null;
+        if(meet.date === INVALID_DATE){
+            meet.date = null;
+        }
         return meet;
     }
 }

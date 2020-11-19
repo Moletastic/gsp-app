@@ -5,18 +5,14 @@ import CommitForm from "@/components/form/commit/index.vue";
 import { Commit } from "@/types/core/project";
 import moment from "moment";
 import { CRUDService } from "@/api/crud-service";
+import CrudTableMixin from "@/components/mixins/crud-table";
 
 @Component({
     components: {
         CommitForm
     }
 })
-export default class CommitTable extends Vue {
-    @Prop()
-    readonly project_id!: number;
-
-    api_service = new CRUDService<Commit>("commit");
-
+export default class CommitTable extends CrudTableMixin<Commit> {
     @Prop({
         default: () => {
             return new DataTable<Commit>({
@@ -39,79 +35,10 @@ export default class CommitTable extends Vue {
         }
     })
     table!: DataTable<Commit>;
-    moment = moment;
+    api = new CRUDService<Commit>("commit");
+    entity = new Commit({});
 
-    commit = new Commit({});
-
-    modal = false;
-    modal_mode: Mode = "CHECK";
-
-    selected_index = 0;
-
-    checkDetails(commit: Commit): void {
-        this.selected_index = this.table.data.indexOf(commit);
-        this.modal_mode = "CHECK";
-        this.commit = Object.assign({}, commit);
-        this.modal = true;
-    }
-
-    async drop(): Promise<void> {
-        const commit = this.table.data[this.selected_index];
-        try {
-            const result = await this.api_service.delete(commit);
-            this.$delete(this.table.data, this.selected_index);
-            $debug("log", result);
-        } catch (err) {
-            $debug("error", err);
-        }
-        this.close();
-    }
-
-    edit(): void {
-        this.modal_mode = "EDIT";
-    }
-
-    async update(): Promise<void> {
-        this.$set(
-            this.table.data,
-            this.selected_index,
-            Object.assign({}, this.commit)
-        );
-        const commit = this.table.data[this.selected_index];
-        commit.project_id = this.project_id;
-        try {
-            const result = await this.api_service.update(commit);
-            $debug("log", result);
-        } catch (err) {
-            $debug("error", err);
-        }
-        this.close();
-    }
-
-    add(): void {
-        this.commit = new Commit({});
-        this.modal_mode = "ADD";
-        this.modal = true;
-    }
-
-    async create(): Promise<void> {
-        const index = this.table.data.length;
-        this.$set(this.table.data, index, Object.assign({}, this.commit));
-        const commit = this.table.data[index];
-        $debug("log", commit);
-        $debug("log", this.project_id);
-        commit.project_id = this.project_id;
-        try {
-            const result = await this.api_service.create(commit);
-            $debug("log", result);
-        } catch (err) {
-            $debug("error", err);
-        }
-        this.close();
-    }
-
-    close(): void {
-        this.modal = false;
-        this.modal_mode = "CHECK";
+    getNew(): Commit {
+        return new Commit({});
     }
 }

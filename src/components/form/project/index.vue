@@ -1,68 +1,76 @@
 <template>
     <v-container grid-list-md>
-        <v-form>
+        <v-form ref="form">
             <v-layout row wrap>
                 <v-flex xs6>
                     <v-text-field
                         label="Ingresar nombre de proyecto: "
                         v-model="form.title"
+                        :rules="rules.name"
                     ></v-text-field>
                 </v-flex>
+                <v-flex xs6></v-flex>
                 <v-flex xs6 class="d-flex align-center">
                     <v-select
+                        label="Seleccionar tipo:"
+                        v-model="form.project_type"
+                        :items="project_types"
+                        :rules="rules.project_type"
+                        item-text="t"
+                        return-object
+                    ></v-select>
+                </v-flex>
+                <v-flex xs6 class="d-flex align-center">
+                    <v-autocomplete
                         label="Seleccionar tema:"
                         multiple
                         v-model="form.subjects"
                         :items="subjects"
                         item-text="name"
+                        :rules="rules.subjects"
                         return-object
-                    ></v-select>
-                    <v-btn class="ml-2" outlined x-small color="success">
-                        Nuevo
-                        <v-icon x-small>mdi-plus</v-icon>
-                    </v-btn>
-                </v-flex>
-                <v-flex xs6 class="d-flex align-center pb-1">
-                    <v-select
-                        :items="students"
-                        v-model="form.authors"
-                        chips
-                        multiple
-                        label="Seleccionar estudiantes: "
-                        :item-text="s => s.first_name + ' ' + s.last_name"
-                        return-object
-                    ></v-select>
-                    <v-btn
-                        class="ml-2 mr-1"
-                        outlined
-                        x-small
-                        color="success"
-                        @click="student_modal = true"
-                    >
-                        Nuevo
-                        <v-icon x-small>mdi-plus</v-icon>
-                    </v-btn>
-                </v-flex>
-                <v-flex xs6 class="d-flex align-center pb-1">
-                    <v-select
-                        :items="teachers"
-                        v-model="form.guides"
-                        chips
-                        multiple
-                        label="Seleccionar profesores: "
-                        item-text="user.nick"
-                        return-object
-                    ></v-select>
+                    ></v-autocomplete>
                     <v-btn
                         class="ml-2"
                         outlined
                         x-small
                         color="success"
-                        @click="teacher_modal = true"
+                        @click="openSubjectModal"
                     >
                         Nuevo
                         <v-icon x-small>mdi-plus</v-icon>
                     </v-btn>
+                </v-flex>
+                <v-flex xs12 class="d-flex align-center">
+                    <v-textarea
+                        label="Ingresar una descripción (opcional): "
+                        outlined
+                        v-model="form.desc"
+                    ></v-textarea>
+                </v-flex>
+                <v-flex xs6 class="d-flex align-center pb-1">
+                    <v-autocomplete
+                        :items="teachers"
+                        v-model="form.guides"
+                        :rules="rules.guides"
+                        chips
+                        multiple
+                        label="Seleccionar profesores: "
+                        item-text="account.nick"
+                        return-object
+                    ></v-autocomplete>
+                </v-flex>
+                <v-flex xs6 class="d-flex align-center pb-1">
+                    <v-autocomplete
+                        :items="students"
+                        v-model="form.authors"
+                        chips
+                        multiple
+                        :rules="rules.authors"
+                        label="Seleccionar estudiantes: "
+                        :item-text="s => s.first_name + ' ' + s.last_name"
+                        return-object
+                    ></v-autocomplete>
                 </v-flex>
                 <v-flex xs6>
                     <v-card outlined>
@@ -110,9 +118,7 @@
                                                         )
                                                     "
                                                 >
-                                                    <v-icon
-                                                        small
-                                                        color="red lighten-2"
+                                                    <v-icon small color="error"
                                                         >mdi-delete</v-icon
                                                     >
                                                 </v-btn>
@@ -124,11 +130,12 @@
                                     <v-btn
                                         outlined
                                         block
-                                        color="green lighten-2"
+                                        color="success"
                                         @click="addEmptyMilestone"
+                                        small
                                     >
                                         Agregar hito
-                                        <v-icon>mdi-plus</v-icon>
+                                        <v-icon small right>mdi-plus</v-icon>
                                     </v-btn>
                                 </v-flex>
                             </v-layout>
@@ -160,45 +167,25 @@
                                     <v-btn
                                         outlined
                                         block
-                                        color="green"
+                                        small
+                                        color="success"
                                         @click="addEmptyLink"
                                     >
                                         Agregar link
-                                        <v-icon>mdi-plus</v-icon>
+                                        <v-icon right small>mdi-plus</v-icon>
                                     </v-btn>
                                 </v-flex>
                             </v-layout>
                         </v-card-text>
                     </v-card>
                 </v-flex>
-                <v-flex xs12>
-                    <v-text-field
-                        label="Ingresar etiqueta:"
-                        persistent-hint
-                        hint="Oprimir enter para añadir más etiquetas"
-                        outlined
-                        @keyup.enter="enterTag"
-                        v-model="tag"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12 class="pt-0">
-                    <v-slide-x-transition group>
-                        <v-chip
-                            close
-                            @click:close="removeTag(tag)"
-                            class="mr-2"
-                            v-for="(tag, index) in tags"
-                            :key="index"
-                            >{{ tag }}</v-chip
-                        >
-                    </v-slide-x-transition>
-                </v-flex>
                 <v-flex xs12 class="d-flex justify-end">
                     <v-btn
                         @click="onSubmit"
                         depressed
-                        color="green"
+                        color="primary"
                         class="mt-2 white--text"
+                        :loading="load"
                     >
                         Guardar
                         <v-icon right>mdi-content-save</v-icon>
@@ -220,6 +207,11 @@
                                 <student-form></student-form>
                             </v-card-text>
                         </v-card>
+                    </v-dialog>
+                </v-flex>
+                <v-flex xs12>
+                    <v-dialog max-width="960px" v-model="subject_modal">
+                        <subject-form @submit="onSubmitSubject"></subject-form>
                     </v-dialog>
                 </v-flex>
                 <v-flex xs12>

@@ -1,8 +1,10 @@
-import { Vue, Component, Prop} from "vue-property-decorator";
+import { Vue, Component, Prop } from "vue-property-decorator";
 import { $debug } from "@/utils";
 import { DataTable, Mode } from "@/types/vuetify";
-import { GSPObject} from "@/types/core/base";
+import { GSPObject } from "@/types/core/base";
 import { CRUDService } from "@/api/crud-service";
+import { VForm } from "@/types";
+import { partialModule } from "@/store";
 
 class CustomGSPObject extends GSPObject {
     project_id!: number;
@@ -10,6 +12,10 @@ class CustomGSPObject extends GSPObject {
     clean(): this {
         return this.clean();
     }
+}
+
+export interface GSPForm extends Vue {
+    onSubmit(): void;
 }
 
 export interface CrudTableProps<T> {
@@ -56,8 +62,9 @@ export default class CrudTableMixin<T extends CustomGSPObject> extends Vue {
             const result = await this.api.delete(obj);
             this.$delete(this.table.data, this.selected_index);
             $debug("log", result);
+            partialModule.showSuccess("Registro borrado correctamente");
         } catch (err) {
-            $debug("error", err);
+            partialModule.showError(err);
         }
         this.close();
     }
@@ -72,12 +79,18 @@ export default class CrudTableMixin<T extends CustomGSPObject> extends Vue {
         const obj = entity.clean();
         try {
             const result = await this.api.update(obj);
-            this.$set(this.table.data, this.selected_index, entity);
+            this.$set(this.table.data, this.selected_index, result);
+            this.refresh();
             $debug("log", result);
+            partialModule.showSuccess("Registro actualizado correctamente");
         } catch (err) {
-            $debug("error", err);
+            partialModule.showError(err);
         }
         this.close();
+    }
+
+    refresh(): void {
+        $debug("log", "this method should be overwrited");
     }
 
     add(): void {
@@ -99,9 +112,10 @@ export default class CrudTableMixin<T extends CustomGSPObject> extends Vue {
         try {
             const result = await this.api.create(obj);
             $debug("log", result);
-            this.$set(this.table.data, index, Object.assign({}, this.entity));
+            this.$set(this.table.data, index, result);
+            partialModule.showSuccess("Registro creado correctamente");
         } catch (err) {
-            $debug("error", err);
+            partialModule.showError(err);
         }
         this.close();
     }
@@ -109,5 +123,23 @@ export default class CrudTableMixin<T extends CustomGSPObject> extends Vue {
     close(): void {
         this.modal = false;
         this.modal_mode = "CHECK";
+    }
+
+    async save(): Promise<void> {
+        if (this.modal_mode === "ADD") {
+            await this.create();
+        }
+        if (this.modal_mode === "EDIT") {
+            await this.update();
+        }
+    }
+
+    submitForm(): void {
+        if (!this.$refs.form) {
+            $debug("log", "Unfound reference");
+            return;
+        }
+        const form = this.$refs.form as GSPForm;
+        form.onSubmit();
     }
 }

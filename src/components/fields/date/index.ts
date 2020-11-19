@@ -1,6 +1,7 @@
 import { Component, Vue, Watch, Prop } from "vue-property-decorator";
 import { $debug } from "@/utils";
 import moment from "moment";
+import { VRule } from "@/types";
 
 @Component
 export default class DateField extends Vue {
@@ -12,6 +13,8 @@ export default class DateField extends Vue {
     outlined!: boolean;
     @Prop({ default: false })
     disabled!: boolean;
+    @Prop({ default: [] })
+    readonly rules!: VRule[];
 
     menu = false;
 

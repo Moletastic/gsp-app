@@ -1,7 +1,7 @@
 <template>
     <v-layout wrap>
         <v-flex xs12 class="d-flex flex-row-reverse">
-            <v-btn @click="add" small outlined color="green" right
+            <v-btn @click="add" small outlined color="success" right
                 >Agregar<v-icon small right>mdi-plus</v-icon></v-btn
             >
         </v-flex>
@@ -16,7 +16,7 @@
             >
                 <template v-slot:item.done="{ item }">
                     <v-icon
-                        :color="item.done ? 'green' : 'grey'"
+                        :color="item.done ? 'success' : 'grey'"
                         v-text="
                             item.done ? 'mdi-check-bold' : 'mdi-power-sleep'
                         "
@@ -38,13 +38,13 @@
                 </template>
                 <template v-slot:item.date="{ item }">
                     <v-chip>
-                        {{ item.date | datetime }}
+                        {{ item.date | date }}
                     </v-chip>
                 </template>
                 <template v-slot:item._actions="{ item }">
                     <v-btn
                         outlined
-                        color="indigo"
+                        color="primary"
                         small
                         @click="checkDetails(item)"
                         >revisar</v-btn
@@ -74,20 +74,22 @@
                     </v-card-title>
                     <v-card-text>
                         <meet-form
+                            ref="form"
                             :form="entity"
                             :mode="modal_mode"
                             :channels="channels"
+                            @submit="save"
                         ></meet-form>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn
-                            @click="create"
+                            @click="submitForm"
                             v-if="modal_mode === 'ADD'"
                             color="primary"
                             >Crear</v-btn
                         >
                         <v-btn
-                            @click="update"
+                            @click="submitForm"
                             v-if="modal_mode === 'EDIT'"
                             color="primary"
                             >Guardar</v-btn

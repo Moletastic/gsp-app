@@ -16,6 +16,7 @@
                             <v-flex xs5>
                                 <v-text-field
                                     v-model="filters.name"
+                                    @keyup.enter="applyFilter"
                                     prepend-icon="mdi-text-box-search-outline"
                                     label="Buscar por nombre: "
                                 ></v-text-field>
@@ -23,13 +24,25 @@
                             <v-flex xs2>
                                 <v-select
                                     v-model="filters.year"
+                                    @keyup.enter="applyFilter"
                                     :items="years"
-                                    label="Ingresar año de proyecto:"
+                                    label="Seleccionar año de proyecto:"
                                 ></v-select>
+                            </v-flex>
+                            <v-flex xs5>
+                                <v-autocomplete
+                                    v-model="filters.project_type"
+                                    @keyup.enter="applyFilter"
+                                    label="Seleccionar tipo de proyecto: "
+                                    :items="project_types"
+                                    item-text="t"
+                                    return-object
+                                ></v-autocomplete>
                             </v-flex>
                             <v-flex xs6>
                                 <v-autocomplete
                                     v-model="filters.teacher"
+                                    @keyup.enter="applyFilter"
                                     label="Seleccionar profesor: "
                                     :items="teachers"
                                     item-text="account.nick"
@@ -59,7 +72,7 @@
         </v-slide-y-transition>
         <v-flex xs6></v-flex>
         <v-flex xs6 class="d-flex justify-end pt-4 pb-5">
-            <v-btn depressed color="success" @click="createNewProject">
+            <v-btn depressed color="primary" @click="createNewProject">
                 Crear proyecto
                 <v-icon right>mdi-plus</v-icon>
             </v-btn>

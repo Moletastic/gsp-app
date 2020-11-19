@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "@/views/app/Home/index.vue";
+import { userModule } from "@/store";
 
 Vue.use(VueRouter);
 
@@ -11,7 +12,6 @@ const routes: Array<RouteConfig> = [
     },
     {
         path: "/login",
-        name: "access",
         component: () => import("@/layouts/access/index.vue"),
         children: [
             {
@@ -23,7 +23,6 @@ const routes: Array<RouteConfig> = [
     },
     {
         path: "/app",
-        name: "app",
         component: () => import("@/layouts/app/index.vue"),
         children: [
             {
@@ -50,6 +49,23 @@ const routes: Array<RouteConfig> = [
                 path: "projects/:id",
                 name: "project",
                 component: () => import("@/views/app/Project/index.vue")
+            },
+            {
+                path: "admin",
+                name: "admin",
+                component: () => import("@/views/app/Admin/index.vue"),
+                beforeEnter(to, from, next) {
+                    if (userModule.isAdmin) {
+                        next();
+                    } else {
+                        next({ name: "not-found" });
+                    }
+                }
+            },
+            {
+                path: "*",
+                name: "not-found",
+                component: () => import("@/views/error/index.vue")
             }
         ]
     }

@@ -18,11 +18,13 @@
             <v-layout wrap>
                 <v-flex xs12>
                     <v-btn
+                        outlined
                         v-for="(opt, i) in options"
                         :key="i"
                         @click="next(opt)"
                         class="mr-2"
                         small
+                        :loading="loading"
                     >
                         {{ desc_state[opt.name] }}
                     </v-btn>

@@ -27,11 +27,11 @@ export class Subject extends GSPObject implements ISubject {
 }
 
 export enum FmtProjectState {
-    "CREATED" = "Creado",
-    "STARTED" = "Iniciado",
+    "CREATED" = "En creación",
+    "STARTED" = "Iniciando",
     "IN_PROGRESS" = "Semestre 1: Desarrollando",
     "PRESENTED" = "Semestre 1: Presentando",
-    "CHECKED" = "Semestre 1: En Revisión",
+    "CHECKED" = "Semestre 1: Revisando",
     "APPROVED" = "Semestre 1: Aprobado",
     "IN_PROGRESS2" = "Semestre 2: Desarrollando",
     "PRESENTED2" = "Semestre 2: Presentando",
@@ -82,10 +82,13 @@ export interface IProjectType extends IGSPObject {
 
 export class ProjectType extends GSPObject implements IProjectType {
     name: string;
+    t: string;
 
     constructor(partial: Partial<IProjectType>) {
         super(partial);
         this.name = partial.name || "";
+        const name: ProjectTypeEnum = this.name as ProjectTypeEnum;
+        this.t = FmtProjectType[name] as string;
     }
 }
 
@@ -99,7 +102,6 @@ export interface IProject extends IGSPObject {
     meets: IMeet[];
     milestones: Milestone[];
     progress: Progress[];
-    tags: string[];
     commits: Commit[];
     reviews: IReview[];
     project_state: IProjectState | null;
@@ -126,7 +128,6 @@ export class Project extends GSPObject implements IProject {
     meets: Meet[] = [];
     milestones: Milestone[] = [];
     progress: Progress[] = [];
-    tags: string[] = [];
     commits: Commit[] = [];
     reviews: Review[] = [];
     project_state: ProjectState | null;
@@ -147,12 +148,6 @@ export class Project extends GSPObject implements IProject {
         this.milestones =
             partial.milestones?.map(mil => new Milestone(mil)) || [];
         this.progress = partial.progress || [];
-        this.tags = partial.tags || [];
-        if (typeof partial?.tags === "string") {
-            this.tags = (<string>partial?.tags).split(";");
-        } else {
-            this.tags = partial?.tags || [];
-        }
         this.commits = partial.commits?.map(com => new Commit(com)) || [];
         this.project_state_id = partial.project_state_id || 0;
         this.project_state = partial.project_state
@@ -212,19 +207,42 @@ export class Project extends GSPObject implements IProject {
         };
     }
 
+    creatable(): Project {
+        const obj = Object.assign({}, this);
+        obj.milestones = obj.milestones.map(m => {
+            m.id = null;
+            return m;
+        });
+        obj.links = obj.links.map(l => {
+            l.id = null;
+            return l;
+        });
+        obj.meets = [];
+        obj.commits = [];
+        obj.progress = [];
+        obj.reviews = [];
+        obj.project_state = null;
+        obj.project_state_id = 1;
+        if (obj.project_type) {
+            obj.project_type_id = obj.project_type.id as number;
+            obj.project_type = null;
+        }
+        return obj;
+    }
+
     clean(): Project {
         const obj = Object.assign({}, this);
         obj.meets = [];
         obj.milestones = [];
         obj.commits = [];
-        obj.subjects = [];
-        obj.links = [];
-        obj.authors = [];
-        obj.guides = [];
         obj.progress = [];
         obj.reviews = [];
         obj.project_state = null;
         obj.project_type = null;
         return obj;
+    }
+
+    get year(): number {
+        return new Date(this.created_at).getFullYear();
     }
 }

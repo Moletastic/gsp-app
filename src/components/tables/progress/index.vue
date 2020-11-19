@@ -1,7 +1,7 @@
 <template>
     <v-layout wrap>
         <v-flex xs12 class="d-flex flex-row-reverse">
-            <v-btn small outlined color="green" right @click="add"
+            <v-btn small outlined color="success" right @click="add"
                 >Agregar<v-icon small right>mdi-plus</v-icon></v-btn
             >
         </v-flex>
@@ -22,7 +22,7 @@
                 <template v-slot:[`item._actions`]="{ item }">
                     <v-btn
                         outlined
-                        color="indigo"
+                        color="primary"
                         small
                         @click="checkDetails(item)"
                         >revisar</v-btn
@@ -52,19 +52,21 @@
                     </v-card-title>
                     <v-card-text>
                         <progress-form
+                            ref="form"
                             :form="entity"
                             :mode="modal_mode"
+                            @submit="save"
                         ></progress-form>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn
-                            @click="create"
+                            @click="submitForm"
                             v-if="modal_mode === 'ADD'"
                             color="primary"
                             >Crear</v-btn
                         >
                         <v-btn
-                            @click="update"
+                            @click="submitForm"
                             v-if="modal_mode === 'EDIT'"
                             color="primary"
                             >Guardar</v-btn

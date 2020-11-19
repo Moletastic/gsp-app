@@ -5,6 +5,12 @@ export interface DataTableHeader<T> {
     value: keyof T | "" | "_actions";
 }
 
+export interface ISnackBar {
+    color: string;
+    message: string;
+    close: boolean;
+}
+
 export class DataTable<T> {
     dialog: boolean;
     search?: string;

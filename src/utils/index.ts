@@ -40,3 +40,7 @@ export function make_enum<T extends string>(o: T[]): { [K in T]: K } {
         return res;
     }, Object.create(null));
 }
+
+export function timeout(ms: number): Promise<void> {
+    return new Promise(r => setTimeout(r, ms));
+}

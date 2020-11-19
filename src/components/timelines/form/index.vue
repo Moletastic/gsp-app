@@ -18,10 +18,17 @@
                                         item.title
                                     }}</span>
                                 </v-card-title>
-                                <v-card-text class="text-left">{{
-                                    item.date.format("dddd DD, MMMM") ||
-                                        "Desconocida"
-                                }}</v-card-text>
+                                <v-card-text
+                                    class="text-left"
+                                    v-if="!item.is_null"
+                                    >{{
+                                        item.date.format("dddd DD, MMMM") ||
+                                            "Desconocida"
+                                    }}</v-card-text
+                                >
+                                <v-card-text class="text-left" v-else>
+                                    Sin Fecha
+                                </v-card-text>
                             </v-card>
                         </v-flex>
                         <v-flex xs6 v-else>

@@ -1,60 +1,67 @@
 <template>
     <v-layout wrap>
-        <v-flex xs12 v-if="mode === 'ADD' || mode === 'EDIT'">
-            <v-layout wrap>
-                <v-flex xs12>
-                    <v-text-field
-                        outlined
-                        label="Ingresar titulo de acuerdo: "
-                        v-model="form.title"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-textarea
-                        outlined
-                        label="Ingresar descripción de acuerdo: "
-                        v-model="form.desc"
-                    ></v-textarea>
-                </v-flex>
-                <v-flex xs12>
-                    <date-field
-                        @change="onDate"
-                        :disabled="disabled"
-                        :date="form.limit_date"
-                        :label="label"
-                    >
-                    </date-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-switch
-                        label="Resuelto"
-                        v-model="form.solved"
-                        @change="changeSolved()"
-                    ></v-switch>
-                </v-flex>
-            </v-layout>
+        <v-flex xs12 v-if="show_form">
+            <v-form ref="form">
+                <v-layout wrap>
+                    <v-flex xs12>
+                        <v-text-field
+                            outlined
+                            label="Ingresar titulo de acuerdo: "
+                            v-model="form.title"
+                            :rules="rules.title"
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-textarea
+                            outlined
+                            label="Ingresar descripción de acuerdo: "
+                            v-model="form.desc"
+                        ></v-textarea>
+                    </v-flex>
+                    <v-flex xs12>
+                        <date-field
+                            @change="onDate"
+                            :disabled="disabled"
+                            :date="form.limit_date"
+                            :label="label"
+                            :rules="rules.limit_date"
+                        >
+                        </date-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-switch
+                            label="Resuelto"
+                            v-model="form.solved"
+                            @change="changeSolved()"
+                            color="success"
+                        ></v-switch>
+                    </v-flex>
+                </v-layout>
+            </v-form>
         </v-flex>
-        <v-flex xs12 v-if="mode === 'CHECK'">
+        <v-flex xs12 v-else>
             <v-layout wrap>
                 <v-flex xs12>
                     <span v-if="form.desc">{{ form.desc }}</span>
-                    <span v-else>Sin Descripción</span>
                 </v-flex>
                 <v-flex xs12 class="mb-2" v-if="form.solved_at">
-                    <v-chip label>
-                        Fecha Límite: {{ form.limit_date.format("DD MMMM") }}
+                    Fecha Límite:
+                    <v-chip label v-if="form.limit_date">
+                        {{ form.limit_date | date }}
                     </v-chip>
+                    <v-chip label v-else>Sin fecha</v-chip>
                 </v-flex>
                 <v-flex xs12 class="mb-2" v-if="form.solved && form.solved_at">
+                    Resuelto en:
                     <v-chip label>
-                        Resuelto en: {{ form.solved_at.format("DD MMMM") }}
+                        {{ form.solved_at | date }}
                     </v-chip>
                 </v-flex>
-                <v-flex xs12 class="mb-2" v-if="form.solved">
-                    <v-chip label class="green white--text">Resuelto</v-chip>
+                <v-flex xs12 v-if="form.solved">
+                    Realizado <v-icon color="success">mdi-check</v-icon>
                 </v-flex>
                 <v-flex xs12 v-else>
-                    <v-chip label>Sin Resolver</v-chip>
+                    No realizado<v-icon color="amber">mdi-weather-night</v-icon>
                 </v-flex>
             </v-layout>
         </v-flex>

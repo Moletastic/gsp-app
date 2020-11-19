@@ -1,4 +1,4 @@
-import { Component, Vue} from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { $debug } from "@/utils";
 import TimeLine from "@/components/timelines/form/index.vue";
 import MilestoneForm from "@/components/form/milestone/index.vue";
@@ -28,7 +28,10 @@ import ProjectLinkForm from "@/components/form/project_link/index.vue";
 import { Review } from "@/types/core/project/rubric";
 import ReviewForm from "@/components/form/review/index.vue";
 import { TokenPayload } from "@/types/core/access";
-import { userModule } from "@/store";
+import { userModule, partialModule } from "@/store";
+import { Student, IStudent } from "@/types/core/education";
+import { Teacher, ITeacher } from "@/types/core/access/teacher";
+import { VVal, VForm } from "@/types";
 
 @Component({
     components: {
@@ -62,6 +65,11 @@ export default class ProjectView extends Vue {
     selected_entity_id = "";
 
     loading = new LoopBar();
+    load = false;
+
+    rules: VVal = {
+        title: [(val: string) => !!val || "Campo requerido"]
+    };
 
     meetsTable = new DataTable<Meet>({
         headers: [
@@ -154,13 +162,28 @@ export default class ProjectView extends Vue {
         rowsPerPageText: "Progresos por página"
     });
 
-    tab = null;
+    tab = "tab-2";
 
     link_modal = false;
     link_form = new Link({});
 
     review_modal = false;
     review_form = new Review({});
+
+    students = [] as Student[];
+    student_modal = false;
+    student_selected = new Student({});
+
+    teachers = [] as Teacher[];
+    teacher_modal = false;
+    teacher_selected = new Teacher({});
+
+    form = {
+        title: "",
+        desc: ""
+    };
+
+    form_modal = false;
 
     mounted(): void {
         this.loading.load();
@@ -170,6 +193,8 @@ export default class ProjectView extends Vue {
     async init(): Promise<void> {
         const id = this.$route.params["id"];
         const project = await this.getProject(id);
+        this.form.desc = this.project.desc;
+        this.form.title = this.project.title;
         this.project_states = await this.getProjectStates();
         if (project) {
             this.project = project;
@@ -179,6 +204,153 @@ export default class ProjectView extends Vue {
             this.progressTable.data = this.project.progress;
         }
         this.loading.unload();
+    }
+
+    async selectStudents(): Promise<void> {
+        try {
+            const students = await $api.get<IStudent>("student");
+            this.students = students.map(s => new Student(s));
+            this.student_modal = true;
+        } catch (err) {
+            partialModule.showError(err);
+        }
+    }
+
+    async addStudent(): Promise<void> {
+        this.load = true;
+        const project = new Project(this.project);
+        const student = this.student_selected;
+        project.authors.push(student);
+        try {
+            const res = await $api.update("project", project.clean());
+            $debug("log", res);
+            const index = this.project.authors.length;
+            this.$set(this.project.authors, index, student);
+            partialModule.showSuccess(
+                "Estudiante autor agregado correctamente"
+            );
+        } catch (err) {
+            partialModule.showError(err);
+        } finally {
+            this.student_modal = false;
+            this.student_selected = new Student({});
+            this.load = false;
+        }
+    }
+
+    async removeStudent(st: Student): Promise<void> {
+        const project = new Project(this.project);
+        const student = Object.assign({}, st);
+        const index = project.authors.map(a => a.id).indexOf(student.id);
+        if (index === -1) {
+            return;
+        }
+        project.authors.splice(index, 1);
+        try {
+            const res = await $api.update("project", project);
+            $debug("log", res);
+            this.$delete(this.project.authors, index);
+            partialModule.showSuccess(
+                "Estudiante autor desvinculado correctamente"
+            );
+        } catch (err) {
+            partialModule.showError(err);
+        }
+    }
+
+    async selectTeachers(): Promise<void> {
+        try {
+            const teachers = await $api.get<ITeacher>("teacher");
+            this.teachers = teachers.map(t => new Teacher(t));
+            $debug("log", teachers);
+            this.teacher_modal = true;
+        } catch (err) {
+            partialModule.showError(err);
+        }
+    }
+
+    async addTeacher(): Promise<void> {
+        const project = new Project(this.project);
+        const teacher = this.teacher_selected;
+        project.guides.push(teacher);
+        try {
+            const res = await $api.update("project", project.clean());
+            $debug("log", res);
+            const index = this.project.guides.length;
+            this.$set(this.project.guides, index, teacher);
+            partialModule.showSuccess("Docente Guía agregado correctamente");
+        } catch (err) {
+            partialModule.showError(err);
+        } finally {
+            this.teacher_modal = false;
+            this.teacher_selected = new Teacher({});
+        }
+    }
+
+    async removeTeacher(guide: Teacher): Promise<void> {
+        const project = new Project(this.project);
+        const teacher = Object.assign({}, guide);
+        const index = project.guides.map(a => a.id).indexOf(teacher.id);
+        if (index === -1) {
+            return;
+        }
+        project.guides.splice(index, 1);
+        try {
+            $debug("log", project.guides);
+            const res = await $api.update("project", project.clean());
+            $debug("log", res);
+            this.$delete(this.project.guides, index);
+            partialModule.showSuccess(
+                "Docente Guía desvinculado correctamente"
+            );
+        } catch (err) {
+            partialModule.showError(err);
+        }
+    }
+
+    openEdit(): void {
+        this.form.title = this.project.title;
+        this.form.desc = this.project.desc;
+        this.form_modal = true;
+    }
+
+    async patchProject(): Promise<void> {
+        if (!this.$refs["patch-form"]) {
+            return;
+        }
+        const form = this.$refs["patch-form"] as VForm;
+        if (!form.validate()) {
+            return;
+        }
+        const id = this.project.id as number;
+        try {
+            await $api.patch("project", id, {
+                title: this.form.title,
+                desc: this.form.desc,
+                project_state_id: this.project.project_state_id
+            });
+            this.project.title = this.form.title;
+            this.project.desc = this.form.desc;
+            partialModule.showSuccess("Proyecto Actualizado");
+        } catch (err) {
+            partialModule.showError(err);
+        } finally {
+            this.form_modal = false;
+        }
+    }
+
+    async updateProject(): Promise<void> {
+        const project = new Project(this.project);
+        try {
+            const res = await $api.update("project", project.clean());
+            $debug("log", res);
+            this.project.title = this.form.title;
+            this.project.desc = this.form.desc;
+        } catch (err) {
+            partialModule.showError(err);
+        } finally {
+            this.form_modal = false;
+        }
     }
 
     async getProject(id: string): Promise<Project | null> {
@@ -254,11 +426,6 @@ export default class ProjectView extends Vue {
             .concat(this.tlprogress);
     }
 
-    checkAuthor(id: string): void {
-        this.selected_entity_id = id;
-        this.userDetails = true;
-    }
-
     addLink(): void {
         this.link_modal = true;
         this.link_form = new Link({});
@@ -270,27 +437,34 @@ export default class ProjectView extends Vue {
     }
 
     async onLinkSubmit(link: Link): Promise<void> {
+        this.load = true;
         try {
             link.id = null;
             link.project_id = this.project.id as number;
             link.link_type = null;
             const res = await $api.create("link", link);
             this.project.links.push(res);
+            partialModule.showSuccess("Enlace agregado correctamente");
         } catch (err) {
-            $debug("error", err);
+            partialModule.showError(err);
         } finally {
+            this.load = false;
             this.link_modal = false;
         }
     }
 
     async removeLink(link: Link): Promise<void> {
+        this.load = true;
         try {
             const res = await $api.delete("link", link);
             $debug("log", res);
             const index = this.project.links.map(l => l.id).indexOf(link.id);
             this.project.links.splice(index, 1);
+            partialModule.showSuccess("Enlace eliminado correctamente");
         } catch (err) {
-            $debug("error", err);
+            partialModule.showError(err);
+        } finally {
+            this.load = false;
         }
     }
 
@@ -309,14 +483,20 @@ export default class ProjectView extends Vue {
             review.rubric = null;
             const res = await $api.create("review", review);
             this.project.reviews.push(res);
+            partialModule.showSnack({
+                message: "Evaluación Creada",
+                close: true,
+                color: "success"
+            });
         } catch (err) {
-            $debug("error", err);
+            partialModule.showError(err);
         } finally {
             this.review_modal = false;
         }
     }
 
     async removeReview(review: Review): Promise<void> {
+        this.load = true;
         try {
             const res = await $api.delete("review", review);
             $debug("log", res);
@@ -324,15 +504,12 @@ export default class ProjectView extends Vue {
                 .map(l => l.id)
                 .indexOf(review.id);
             this.project.reviews.splice(index, 1);
+            partialModule.showSuccess("Evaluación eliminada correctamente");
         } catch (err) {
-            $debug("error", err);
+            partialModule.showError(err);
+        } finally {
+            this.load = false;
         }
-    }
-
-    checkTeacher(id: string): void {
-        $debug("log", id);
-        this.selected_entity_id = id;
-        this.teacherDetails = true;
     }
 
     changeState(state: string): void {
@@ -344,13 +521,43 @@ export default class ProjectView extends Vue {
     }
 
     async onChangeState(state: ProjectState): Promise<void> {
-        this.project.project_state = new ProjectState(state);
-        this.project.project_state_id = this.project.project_state.id as number;
-        await this.save();
+        this.load = true;
+        this.project.project_state = state;
+        this.project.project_state_id = state.id as number;
+        const id = this.project.id as number;
+        try {
+            await $api.patch("project", id, {
+                title: this.project.title,
+                desc: this.project.desc,
+                project_state_id: this.project.project_state_id
+            });
+            partialModule.showSuccess("Proyecto Actualizado");
+        } catch (err) {
+            partialModule.showError(err);
+        }
+        this.load = false;
     }
 
     async save(): Promise<void> {
         const res = await $api.update("project", this.project.getClean());
         $debug("log", res);
+    }
+
+    get teachers_selection(): Teacher[] {
+        if (!this.teachers || this.teachers.length === 0) {
+            return [];
+        }
+        return this.teachers.filter(
+            s => !this.project.guides.map(a => a.id).includes(s.id)
+        );
+    }
+
+    get students_selection(): Student[] {
+        if (!this.students || this.students.length === 0) {
+            return [];
+        }
+        return this.students.filter(
+            s => !this.project.authors.map(a => a.id).includes(s.id)
+        );
     }
 }

@@ -1,10 +1,19 @@
-import { Vue, Component, Prop, Watch, Emit } from "vue-property-decorator";
+import {
+    Vue,
+    Component,
+    Prop,
+    Watch,
+    Emit,
+    Mixins
+} from "vue-property-decorator";
 import { Link, LinkType } from "@/types/core/project";
 import { $api } from "@/api";
 import { projectModule } from "@/store";
+import { VVal, VForm } from "@/types";
+import FormValidation from "@/components/mixins/form-validation";
 
 @Component
-export default class ProjectLinkForm extends Vue {
+export default class ProjectLinkForm extends Mixins(FormValidation) {
     @Prop()
     readonly link!: Link;
 
@@ -14,6 +23,11 @@ export default class ProjectLinkForm extends Vue {
     onChange(link: Link): void {
         this.form = link;
     }
+
+    rules: VVal = {
+        url: [(val: string) => !!val || "URL Requerida"],
+        link_type: [(val: string) => !!val || "Tipo de enlace requerido"]
+    };
 
     mounted(): void {
         this.init();
@@ -31,8 +45,14 @@ export default class ProjectLinkForm extends Vue {
         this.form.link_type_id = obj.id;
     }
 
+    onSubmit(): void {
+        if (this.validate()) {
+            this.sendForm();
+        }
+    }
+
     @Emit("change")
-    onSubmit(): Link {
+    sendForm(): Link {
         return this.form;
     }
 

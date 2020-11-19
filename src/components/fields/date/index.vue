@@ -7,7 +7,7 @@
     :disabled="disabled"
   >
     <template v-slot:activator="{on, attrs}">
-      <v-text-field :disabled="disabled" :outlined="outlined" :label="label" v-model="date_str" persistent-hint v-bind="attrs" v-on="on" />
+      <v-text-field :rules="rules" :disabled="disabled" :outlined="outlined" :label="label" v-model="date_str" persistent-hint v-bind="attrs" v-on="on" />
     </template>
     <v-date-picker :disabled="disabled" @input="menu=false" no-title v-model="picker"></v-date-picker>
   </v-menu>

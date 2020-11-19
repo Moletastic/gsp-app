@@ -1,4 +1,10 @@
-import { VuexModule, Module, Mutation, Action } from "vuex-class-modules";
+import {
+    VuexModule,
+    Module,
+    Mutation,
+    Action,
+    RegisterOptions
+} from "vuex-class-modules";
 import { Account, User } from "@/types/core/access/user";
 import { $debug } from "@/utils";
 import { $api } from "@/api";
@@ -10,6 +16,18 @@ export interface UserModuleStore {
 @Module
 export default class UserModule extends VuexModule {
     user: User | null = null;
+    token = "";
+
+    constructor(options: RegisterOptions) {
+        super(options);
+        this.init();
+    }
+
+    async init(): Promise<void> {
+        if (!this.user) {
+            await this.fetchUser();
+        }
+    }
 
     get isTeacher(): boolean {
         return this.user?.account.account_type === "Teacher";
@@ -20,6 +38,12 @@ export default class UserModule extends VuexModule {
     }
 
     @Mutation
+    setToken(token: string): void {
+        this.token = token;
+        localStorage.setItem("gsp:token", token);
+    }
+
+    @Mutation
     setUser(user: User): void {
         this.user = user;
         this.user.account = new Account(user.account);
@@ -27,7 +51,7 @@ export default class UserModule extends VuexModule {
 
     @Action
     async fetchUser(): Promise<void> {
-        const { user } = await $api.me();
+        const user = await $api.me();
         user.account = new Account(user.account);
         this.setUser(user);
     }

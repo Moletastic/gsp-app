@@ -59,4 +59,5 @@ export default class MeetTable extends CrudTableMixin<Meet> {
         const data: Array<Channel> = await $api.get("channel");
         return data;
     }
+
 }

@@ -1,4 +1,4 @@
-import { IAccount} from "./user";
+import { IAccount } from "./user";
 import { IGSPObject, GSPObject } from "../base";
 
 export interface ITeacher extends IGSPObject {
@@ -17,6 +17,10 @@ export class Teacher extends GSPObject implements ITeacher {
         this.account = partial.account || null;
         this.account_id = partial.account_id || 0;
         this.entry_year = partial.entry_year || 0;
+    }
+
+    get full_name() {
+        return this.account?.first_name + " " + this.account?.last_name;
     }
 
     clean(): Teacher {

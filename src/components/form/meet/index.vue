@@ -1,5 +1,5 @@
 <template>
-    <v-form>
+    <v-form ref="form">
         <v-layout wrap v-if="mode === 'ADD' || mode === 'EDIT'">
             <v-flex xs12>
                 <v-text-field
@@ -7,6 +7,7 @@
                     outlined
                     :label="disabled ? 'Nombre' : 'Ingresar nombre: '"
                     v-model="form.name"
+                    :rules="rules.name"
                 ></v-text-field>
             </v-flex>
             <v-flex xs12>
@@ -19,6 +20,7 @@
                     "
                     :outlined="true"
                     :date="form.date"
+                    @change="onDate"
                 ></date-field>
             </v-flex>
             <v-flex xs6>
@@ -32,10 +34,11 @@
                     outlined
                     :items="channels"
                     v-model="form.channel"
+                    :rules="rules.channel"
                     item-text="name"
                     return-object
                 >
-                    <template v-slot:selection="{ item }" class="ml-0 pl-0">
+                    <template #selection="{ item }" class="ml-0 pl-0">
                         <v-chip
                             :disabled="disabled"
                             class="ml-0 pl-0"
@@ -58,6 +61,7 @@
                     :disabled="disabled"
                     label="Realizada"
                     inset
+                    color="success"
                     v-model="form.done"
                 ></v-switch>
             </v-flex>
@@ -65,20 +69,14 @@
         <v-layout wrap v-if="mode === 'CHECK'">
             <v-flex xs12 v-if="form.date" class="mb-2">
                 Fecha de Reunión:
-                <v-chip label
-                    >
-                    {{ moment(form.date).format("DD MMMM") }}</v-chip
-                >
+                <v-chip label> {{ form.date | date }}</v-chip>
             </v-flex>
             <v-flex xs12 v-else>
                 <v-chip label>Sin fecha establecida</v-chip>
             </v-flex>
             <v-flex xs6 class="mb-2">
                 Canal:
-                <v-chip class="ml-2"
-                label
-
-                >
+                <v-chip class="ml-2" label>
                     <v-avatar left>
                         <v-img width="10px" :src="form.channel.icon"></v-img>
                     </v-avatar>
@@ -86,7 +84,7 @@
                 </v-chip>
             </v-flex>
             <v-flex xs12 v-if="form.done">
-                Realizada <v-icon color="green">mdi-check</v-icon>
+                Realizada <v-icon color="success">mdi-check</v-icon>
             </v-flex>
             <v-flex xs12 v-else>
                 No realizada<v-icon color="amber">mdi-weather-night</v-icon>

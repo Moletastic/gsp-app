@@ -47,8 +47,18 @@ export class Student extends GSPObject implements IStudent {
         this.projects = partial.projects || [];
     }
 
-    get full_name() : string{
+    get full_name(): string {
         return `${this.first_name} ${this.last_name}`;
+    }
+
+    clean(): Student {
+        const obj = Object.assign({}, this);
+        obj.entry_year = Number(obj.entry_year);
+        if (obj.career) {
+            obj.career_id = obj.career.id as number;
+            obj.career = null;
+        }
+        return obj;
     }
 }
 

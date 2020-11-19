@@ -1,10 +1,10 @@
-import { Component, Vue, Watch, Prop } from "vue-property-decorator";
-import { $debug } from "@/utils";
+import { Component, Vue, Prop } from "vue-property-decorator";
 import { ITimeLineItem } from "@/types/vuetify";
 import moment, { Moment } from "moment";
 
 export interface MTimeLine extends Omit<ITimeLineItem, "date"> {
     date: Moment;
+    is_null: boolean;
 }
 
 @Component
@@ -15,16 +15,12 @@ export default class TimeLineForm extends Vue {
     @Prop({ default: true })
     addToday!: boolean;
 
-    @Watch("items")
-    onChange(): void {
-        $debug("table", this.items);
-    }
-
     current: MTimeLine = {
         date: moment(new Date()),
         icon: "",
         color: "blue",
-        title: "Hoy"
+        title: "Hoy",
+        is_null: false
     };
 
     moment = moment;
@@ -33,12 +29,12 @@ export default class TimeLineForm extends Vue {
         if (this.addToday) {
             return this.items
                 .map(it => {
-                    return { ...it, date: moment(it.date) };
+                    return { ...it, date: moment(it.date), is_null: !it.date };
                 })
                 .concat(this.current);
         }
         return this.items.map(it => {
-            return { ...it, date: moment(it.date) };
+            return { ...it, date: moment(it.date), is_null: !it.date };
         });
     }
 

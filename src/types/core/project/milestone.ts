@@ -1,4 +1,6 @@
 import { IGSPObject, GSPObject } from "../base";
+import { INVALID_DATE } from "@/utils/const";
+import { $debug } from "@/utils";
 
 export interface IMilestone extends IGSPObject {
     title: string;
@@ -33,6 +35,10 @@ export class Milestone extends GSPObject implements IMilestone {
 
     clean(): Milestone {
         const obj = Object.assign({}, this);
+        $debug("log", obj);
+        if (obj.date === INVALID_DATE) {
+            obj.date = null;
+        }
         return obj;
     }
 }

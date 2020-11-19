@@ -6,17 +6,27 @@ import vuetify from "./plugins/vuetify";
 import "moment/locale/es";
 import moment from "moment";
 import i18n from "./i18n";
+import Vuelidate from "vuelidate";
+
 Vue.config.productionTip = true;
 Vue.config.silent = true;
 Vue.prototype.$moment = moment;
 
 Vue.filter("date", (value: string) => {
-    return moment(value).format("DD MMMM");
+    if (!value) {
+        return "Sin Fecha";
+    }
+    return moment(value).format("DD MMMM YYYY");
 });
 
 Vue.filter("datetime", (value: string) => {
-    return moment(value).format("DD MMMM - HH:mm");
+    if (!value) {
+        return "Sin Fecha";
+    }
+    return moment(value).format("DD MMMM YYYY - HH:mm");
 });
+
+Vue.use(Vuelidate);
 
 new Vue({
     router,

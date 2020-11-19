@@ -6,7 +6,8 @@ import ProjectForm from "@/components/form/project/index.vue";
 import { $api } from "@/api";
 
 import { DataTable } from "@/types/vuetify";
-import { projectModule } from "@/store";
+import { projectModule, partialModule } from "@/store";
+import { $debug } from "@/utils";
 
 @Component({
     components: {
@@ -43,6 +44,7 @@ export default class ProjectsView extends Vue {
     });
 
     teachers: Teacher[] = [];
+    project_types: ProjectType[] = [];
 
     years = [2019, 2020, 2021, 2022, 2023];
 
@@ -73,36 +75,58 @@ export default class ProjectsView extends Vue {
 
     async init(): Promise<void> {
         this.loading = true;
-        this.teachers = await this.getTeachers();
-        this.projects = await this.getProjects();
-        this.table.data = this.projects;
+        try {
+            this.teachers = await this.getTeachers();
+            this.projects = await this.getProjects();
+            this.project_types = await this.getProjectTypes();
+            this.table.data = this.projects;
+            projectModule.setProjects(this.projects);
+        } catch (err) {
+            partialModule.showError(err);
+        }
         this.loading = false;
-        //this.$store.commit("set_projects", this.projects);
+    }
+
+    refreshTable(projects: Project[]): void {
+        this.table.data = projects;
     }
 
     applyFilter(): void {
+        this.loading = true;
         let filteredProjects: Project[] = projectModule.projects;
-        const { name, teacher, project_type } = this.filters;
+        if (!filteredProjects || filteredProjects.length === 0) {
+            return;
+        }
+        const { name, year, teacher, project_type } = this.filters;
         if (name && name !== "") {
             filteredProjects = filteredProjects.filter(project =>
-                project.title.toLowerCase().includes(name)
+                project.title.toLowerCase().includes(name.toLowerCase())
             );
+        }
+        if (year) {
+            filteredProjects = filteredProjects.filter(p => p.year === year);
         }
         if (project_type) {
             filteredProjects = filteredProjects.filter(
-                project => project.project_type === project_type
+                project => project.project_type?.id === project_type.id
             );
         }
         if (teacher) {
-            filteredProjects = filteredProjects.filter(project =>
-                project.guides.map(teach => teach.id).includes(teacher.id)
-            );
+            filteredProjects = filteredProjects.filter(project => {
+                const hasTeacher = project.guides
+                    .map(teach => teach.id)
+                    .includes(teacher.id);
+                return hasTeacher;
+            });
         }
         this.projects = filteredProjects;
+        this.refreshTable(filteredProjects);
+        this.loading = false;
     }
 
     clearFilter(): void {
         this.projects = projectModule.projects;
+        this.refreshTable(this.projects);
         this.filters = {
             name: undefined,
             state: undefined,
@@ -132,5 +156,10 @@ export default class ProjectsView extends Vue {
     async getTeachers(): Promise<Teacher[]> {
         const data: Array<Teacher> = await $api.get("teacher");
         return data;
+    }
+
+    async getProjectTypes(): Promise<ProjectType[]> {
+        const data: Array<ProjectType> = await $api.get("ptype");
+        return data.map(p => new ProjectType(p));
     }
 }

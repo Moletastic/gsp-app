@@ -1,6 +1,6 @@
 <template>
     <v-layout wrap>
-        <v-flex xs12 pb-5 v-if="!loading.active">
+        <v-flex xs8 pb-5 v-if="!loading.active">
             <h1>
                 <v-avatar v-if="project.subjects[0]" color="primary">
                     <v-icon color="white">{{
@@ -8,7 +8,17 @@
                     }}</v-icon>
                 </v-avatar>
                 Proyecto: {{ project.title }}
+                <v-btn small icon
+                    ><v-icon small @click="openEdit"
+                        >mdi-border-color</v-icon
+                    ></v-btn
+                >
             </h1>
+            <v-card class="my-2" v-show="project.desc" outlined>
+                <v-card-text class="font-italic">{{
+                    project.desc
+                }}</v-card-text>
+            </v-card>
             <h2 class="body-2 pt-2">
                 Autor:
                 <template v-for="(author, index) in project.authors">
@@ -16,11 +26,15 @@
                         :key="index"
                         small
                         label
-                        @click="checkAuthor(author.id)"
+                        close
+                        @click:close="removeStudent(author)"
                         class="clickable primary mr-2"
                         >{{ author.full_name }}</v-chip
                     >
                 </template>
+                <v-btn icon small @click="selectStudents"
+                    ><v-icon small>mdi-plus</v-icon></v-btn
+                >
             </h2>
             <h2 class="body-2 pt-2">
                 Guía:
@@ -29,17 +43,21 @@
                         :key="index"
                         small
                         label
-                        @click="checkTeacher(guide.id)"
+                        close
+                        @click:close="removeTeacher(guide)"
                         class="clickable primary mr-2"
                         >{{ guide.account.nick }}</v-chip
                     >
                 </template>
+                <v-btn icon small @click="selectTeachers"
+                    ><v-icon small>mdi-plus</v-icon></v-btn
+                >
             </h2>
             <h2 class="body-2 pt-2">
                 Temas:
                 <v-chip
                     label
-                    class="primary"
+                    class="primary mr-2"
                     small
                     v-for="(subject, index) in project.subjects"
                     :key="index"
@@ -47,48 +65,68 @@
                 >
             </h2>
         </v-flex>
-        <v-flex xs12>
+        <v-flex xs9>
             <state-switch
                 v-if="project.project_state"
                 @change="$e => onChangeState($e)"
                 :state="project.project_state"
+                :loading="load"
             ></state-switch>
         </v-flex>
         <v-flex xs8 class="mb-5">
             <v-card outlined>
                 <v-card-text class="px-0 py-0">
                     <v-simple-table dense>
-                        <template v-slot:default>
+                        <template #default>
                             <thead>
                                 <tr>
                                     <th class="text-left">Links</th>
-                                    <v-btn color="green" @click="addLink" small
-                                        ><v-icon small>mdi-plus</v-icon></v-btn
+                                    <v-btn
+                                        class="my-2 mr-2"
+                                        color="success"
+                                        @click="addLink"
+                                        small
+                                        outlined
+                                        >Agregar
+                                        <v-icon right small
+                                            >mdi-plus</v-icon
+                                        ></v-btn
                                     >
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr
-                                    v-for="(link, index) in project.links"
-                                    :key="index"
-                                >
-                                    <td>
-                                        <v-icon small class="mr-2">{{
-                                            link.link_type.icon
-                                        }}</v-icon>
-                                        <a :href="link.url" target="_blank">{{
-                                            link.url
-                                        }}</a>
-                                    </td>
-                                    <td>
-                                        <v-btn
-                                            depressed
-                                            @click="removeLink(link)"
-                                            fab
-                                            x-small
-                                        >
-                                            <v-icon small>mdi-close</v-icon>
-                                        </v-btn>
+                                <template v-if="project.links.length !== 0">
+                                    <tr
+                                        v-for="(link, index) in project.links"
+                                        :key="index"
+                                    >
+                                        <td>
+                                            <v-icon small class="mr-2">{{
+                                                link.link_type.icon
+                                            }}</v-icon>
+                                            <a
+                                                :href="link.url"
+                                                target="_blank"
+                                                >{{ link.url }}</a
+                                            >
+                                        </td>
+                                        <td>
+                                            <v-btn
+                                                icon
+                                                @click="removeLink(link)"
+                                                small
+                                                :loading="load"
+                                            >
+                                                <v-icon small
+                                                    >mdi-delete</v-icon
+                                                >
+                                            </v-btn>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr v-else>
+                                    <td class="grey--text font-italic">
+                                        Sin Links Registrados
                                     </td>
                                 </tr>
                             </tbody>
@@ -101,45 +139,64 @@
             <v-card outlined>
                 <v-card-text class="px-0 py-0">
                     <v-simple-table dense>
-                        <template v-slot:default>
+                        <template #default>
                             <thead>
                                 <tr>
                                     <th class="text-left">Evaluaciones</th>
                                     <v-btn
-                                        color="green"
+                                        color="success"
                                         @click="addReview"
                                         small
-                                        ><v-icon small>mdi-plus</v-icon></v-btn
+                                        class="my-2 mr-2"
+                                        outlined
+                                        >Agregar
+                                        <v-icon right small
+                                            >mdi-plus</v-icon
+                                        ></v-btn
                                     >
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr
-                                    v-for="(review, index) in project.reviews"
-                                    :key="index"
-                                >
-                                    <td>
-                                        {{ review.name }}
-                                    </td>
-                                    <td>
-                                        Hecha en {{ review.created_at | date }}
-                                    </td>
-                                    <td>
-                                        <a
-                                            :href="review.file_url"
-                                            target="_blank"
-                                            >Ir a Evaluación</a
-                                        >
-                                    </td>
-                                    <td>
-                                        <v-btn
-                                            depressed
-                                            @click="removeReview(review)"
-                                            fab
-                                            x-small
-                                        >
-                                            <v-icon small>mdi-close</v-icon>
-                                        </v-btn>
+                                <template v-if="project.reviews.length !== 0">
+                                    <tr
+                                        v-for="(review,
+                                        index) in project.reviews"
+                                        :key="index"
+                                    >
+                                        <td>
+                                            {{ review.name }}
+                                        </td>
+                                        <td>
+                                            {{ review.score }}
+                                        </td>
+                                        <td>
+                                            {{ review.comment }}
+                                        </td>
+                                        <td>
+                                            <a
+                                                :href="review.file_url"
+                                                target="_blank"
+                                                >Ir a Evaluación</a
+                                            >
+                                        </td>
+                                        <td>
+                                            <v-btn
+                                                depressed
+                                                @click="removeReview(review)"
+                                                icon
+                                                x-small
+                                                :loading="load"
+                                            >
+                                                <v-icon small
+                                                    >mdi-delete</v-icon
+                                                >
+                                            </v-btn>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr v-else>
+                                    <td class="grey--text font-italic">
+                                        Sin Evaluaciones Registradas
                                     </td>
                                 </tr>
                             </tbody>
@@ -254,6 +311,90 @@
             <time-line :items="tlitems"></time-line>
         </v-flex>
         <v-layout wrap justify-center>
+            <v-dialog v-model="student_modal" width="560px">
+                <v-card>
+                    <v-card-title>
+                        Agregando autor
+                    </v-card-title>
+                    <v-card-text>
+                        <v-layout wrap>
+                            <v-flex xs12>
+                                <v-select
+                                    :items="students_selection"
+                                    v-model="student_selected"
+                                    label="Seleccionar estudiante: "
+                                    :item-text="
+                                        s => s.first_name + ' ' + s.last_name
+                                    "
+                                    return-object
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" @click="addStudent"
+                            >Agregar al proyecto</v-btn
+                        >
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="teacher_modal" width="560px">
+                <v-card>
+                    <v-card-title>
+                        Agregando Docente Guía
+                    </v-card-title>
+                    <v-card-text>
+                        <v-layout wrap>
+                            <v-flex xs12>
+                                <v-select
+                                    :items="teachers_selection"
+                                    v-model="teacher_selected"
+                                    label="Seleccionar profesor: "
+                                    :item-text="g => g.full_name"
+                                    return-object
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" @click="addTeacher"
+                            >Agregar al proyecto</v-btn
+                        >
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="form_modal" width="560px">
+                <v-card>
+                    <v-card-title>
+                        Titulo y Descripción de proyecto
+                    </v-card-title>
+                    <v-card-text>
+                        <v-form ref="patch-form">
+                            <v-layout wrap>
+                                <v-flex xs12>
+                                    <v-text-field
+                                        label="Ingresar nuevo titulo: "
+                                        v-model="form.title"
+                                        :rules="rules.title"
+                                    ></v-text-field>
+                                </v-flex>
+                                <v-flex xs12>
+                                    <v-textarea
+                                        outlined
+                                        label="Ingresar nueva descripción: "
+                                        v-model="form.desc"
+                                    ></v-textarea>
+                                </v-flex>
+                            </v-layout>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn @click="patchProject" color="primary"
+                            >Guardar</v-btn
+                        >
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
             <v-dialog v-model="link_modal" width="760px">
                 <v-card>
                     <v-card-title>
@@ -283,24 +424,6 @@
                         </v-layout>
                     </v-card-text>
                 </v-card>
-            </v-dialog>
-        </v-layout>
-        <v-layout row justify-center>
-            <v-dialog v-model="userDetails" :max-width="650">
-                <json-viewer
-                    :verbose="'students'"
-                    :entity="'edu/student'"
-                    :entity_id="selected_entity_id"
-                ></json-viewer>
-            </v-dialog>
-        </v-layout>
-        <v-layout row justify-center>
-            <v-dialog v-model="teacherDetails" :max-width="650">
-                <json-viewer
-                    :verbose="'user'"
-                    :entity="'teachers'"
-                    :entity_id="selected_entity_id"
-                ></json-viewer>
             </v-dialog>
         </v-layout>
         <loading-bar :loading="loading"></loading-bar>

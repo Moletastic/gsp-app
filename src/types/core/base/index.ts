@@ -17,9 +17,9 @@ export interface IGSPObject extends DatedObject {
 
 export class GSPObject implements IGSPObject {
     id: number | null;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
+    readonly created_at: string;
+    readonly updated_at: string;
+    readonly deleted_at: string | null;
     entity: string;
     uid: string;
     is_valid: boolean;
