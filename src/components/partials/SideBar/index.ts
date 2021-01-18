@@ -41,6 +41,12 @@ export default class SideBar extends Vue {
             });
         }
         this.links.push({
+            title: "Sobre UTEM GSP",
+            icon: "mdi-school",
+            active: true,
+            to: "about"
+        });
+        this.links.push({
             title: "Salir",
             icon: "mdi-logout",
             active: true,

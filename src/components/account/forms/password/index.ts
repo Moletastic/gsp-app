@@ -9,7 +9,6 @@ import {
 import FormValidation from "@/components/mixins/form-validation";
 import { PasswordForm } from "@/types/core/access";
 import { VVal } from "@/types";
-import { $debug } from "@/utils";
 
 @Component
 export default class ChangePasswordForm extends Mixins(FormValidation) {
@@ -24,7 +23,7 @@ export default class ChangePasswordForm extends Mixins(FormValidation) {
             (val: string) => !!val || "Confirmación requerida",
             (val: string) => {
                 const pass = this.new_password;
-                return val !== pass || "Contraseñas no coinciden";
+                return val === pass || "Contraseñas no coinciden";
             }
         ]
     };

@@ -115,7 +115,7 @@ const url = {
 };
 
 const instance = axios.create({
-    baseURL: `${url.remote}/api/`
+    baseURL: `${url.local}/api/`
 });
 instance.interceptors.request.use(config => {
     const token = localStorage.getItem("gsp:token");
